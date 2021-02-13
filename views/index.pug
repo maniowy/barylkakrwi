@@ -1,0 +1,100 @@
+extends default
+include ./donation.mixin.pug
+
+//-block navi
+//- a.navi(href="/stats", style='display:none;') Statystyki
+
+block content
+  div.container.has-text-left
+    label Aktualny stan zapełnienia baryłki: 
+      span#progressBarSpinner.icon
+        i.fas.fa-spinner.fa-pulse
+      //-meter#progressBar(value="0.0")
+      label#percentText
+  div.container.mt-3
+    div.columns
+      div.column.is-half
+        div.box
+          form#inputform(onsubmit="return submitForm();")
+            div.container
+              +donation(0, false)
+              div.field.is-horizontal.is-mobile.mt-1
+                div.field-label
+                div.field-body
+                  div.field.file.has-name
+                    div.control
+                      label.file-label
+                        input.file-input#photoSelector(
+                          type='file',
+                          multiple,
+                          accept="image/*"
+                          required
+                          onchange="updateFilename()"
+                        )
+                        span.file-cta
+                          span.file-icon
+                            i.fas.fa-upload
+                          span.file-label Zdjęcie
+                        span.file-name  Wybierz zdjęcie
+              div.field.is-horizontal.is-mobile
+                div.field-label
+                  label(for='adult') +18:
+                div.field-body
+                  p.checkbox
+                    //-span.fa-stack
+                    //-  i.fas.fa-circle.fa-stack-2x
+                    //-  span.fa-inverse.fa-stack-1x.plus18
+                    input#adult(type='checkbox')
+              div.field.is-horizontal.is-mobile Opcjonalne:
+              div.field.is-horizontal.is-mobile
+                div.field-label
+                  label(for='group') Grupa krwi:
+                div.field-body
+                  div.control.select
+                    select(id='group', name='groups')
+                      each group in configData.groups
+                        option(value=`${group.id}`) #{group.name}
+              div.field.is-horizontal.is-mobile
+                div.field-label
+                  label(for="privateCounter") Prywatny licznik:
+                div.field-body
+                  div.control.has-icons-right
+                    input.input#privateCounter(name='privateCounter',
+                                  type='number',
+                                  min=0)
+                    span.icon.is-right ml
+              div.field.is-horizontal.is-mobile
+                div.field-label
+                  label(for='order') Odznaczenia:
+                div.field-body
+                  div#orders.field.is-grouped.is-grouped-multiline
+                    each order in configData.orders
+                      p.control
+                        label.checkbox.is-small #{order.name}
+                          input.ml-2(id=`order_${order.id}` type='checkbox')
+              div.field
+                label(for='message')
+                p.control
+                  textarea#message.textarea(name='message' placeholder='Wiadomość') #{configData.tags.join(" ")}
+              div.field.buttons
+                button.button.is-danger#submit(type='submit') Wyślij
+                button.button.is-danger#previewButton(type='button' name='previewButton', onclick="showPreview();") Podgląd
+      div.column
+  div.modal#preview
+    div.modal-background(onclick="hidePreview();")
+    div.modal-content
+      p#previewOutput
+      div#previewImages
+    button.modal-close.is-large(onclick="hidePreview();")
+  div.modal#error
+    div.modal-background(onclick="dismissError();")
+    div.modal-content#errorModalContent
+      div.message.is-danger
+        div.message-header
+          p Wystąpił błąd
+          button.delete.is-large(onclick="dismissError();")
+        div.message-body
+          p#errorOutput
+          button.button.is-danger(onclick="dismissError();") Zamknij
+  script
+    include /js/lazy.js

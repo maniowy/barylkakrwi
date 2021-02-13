@@ -1,0 +1,35 @@
+{
+  "name": "barylka",
+  "version": "0.0.1",
+  "description": "Barylka krwi",
+  "scripts": {
+    "css-build": "node-sass _sass/styles.scss public/css/styles.css",
+    "css-postcss": "postcss --use autoprefixer --output public/css/styles.css public/css/styles.css",
+    "css-deploy": "npm run css-build && npm run css-postcss",
+    "css-watch": "npm run css-build -- --watch",
+    "js-build": "babel _javascript --out-dir lib",
+    "js-watch": "npm run js-build -- --watch",
+    "deploy": "npm run css-deploy && npm run js-build",
+    "start": "DEBUG=*:* npx nodemon server.js"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.0.1",
+    "bulma": "^0.9.1",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "filereader": "^0.10.3",
+    "form-data": "^3.0.0",
+    "formdata-node": "^2.4.0",
+    "formidable": "^1.2.2",
+    "md5": "^2.0.0",
+    "node-sass": "^4.14.1",
+    "postcss": "^8.1.4",
+    "postcss-cli": "^8.2.0",
+    "pug": "^2.0.3",
+    "simple-node-logger": "^18.12.24",
+    "wykop-nodejs": "^1.0.8"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.0"
+  }
+}

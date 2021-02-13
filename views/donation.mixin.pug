@@ -1,0 +1,107 @@
+mixin donation(id, deletable)
+  fieldset(id=`donation_${id}` donationId=id class="donation")
+    legend
+        //- FIXME auto-number on client side
+        span Donacja #{id-(-1)}
+        if deletable
+          a.button.deleteButton.is-danger.is-small.ml-1(
+                   onclick=`deleteDonation(${id});`
+                   title="usuń tę donację"
+                  )
+            span.icon
+              i.fas.fa-minus
+        a.button.createButton.is-link.is-small.ml-1(
+                 onclick=`createDonation();`
+                 title="dodaj kolejną donację"
+                )
+          span.icon
+            i.fas.fa-plus
+    div.field.is-horizontal.is-mobile.mt-2
+      div.field-label
+        label(for=`date_${id}`) Data donacji:
+      div.field-body
+        div.field.is-narrow
+          div.control
+            input.input(id=`date_${id}`,
+                  name=`date`,
+                  donationId=id,
+                  class="donationDate",
+                  type='date',
+                  required,
+                  min=configData.startDate)
+    div.field.is-horizontal.is-mobile
+      div.field-label
+        label(for=`kind_${id}`) Rodzaj donacji:
+      div.field-body
+        div.control
+          div.select
+            select(id=`kind_${id}`, name=`kind`,
+                   onchange=`onDonationKindChange(${id});`)
+              each kind in configData.kinds
+                option(value=`${kind.id}`) #{kind.name}
+            select.is-hidden(id=`hidden_kind_${id}`)
+              option #{configData.kinds[0].name}
+    div.field.is-horizontal.is-mobile
+      div.field-label
+        label(for=`volume_${id}`) Objętość:
+      div.field-body
+        div.field.is-narrow
+          p.control.is-narrow.has-icons-right(title="Ekwiwalent objętości krwi pełnej")
+            input.input(id=`volume_${id}`,
+                  name=`volume`,
+                  class="volume",
+                  type='number',
+                  min=0,
+                  max=2000,
+                  value=450,
+                  required)
+            span.icon.is-right ml
+          a.icon.is-hidden.is-pulled-right(href="https://krwiodawcy.org/kalkulator-donacji",
+            rel="noopener noreferrer",
+            target="_blank"
+            tabindex=-1
+            title="Przejdź do kalkulatora donacji")
+            i.fas.fa-calculator
+    div.field.is-horizontal.is-mobile
+      div.field-label
+        label(for=`site_${id}`) Placówka:
+      div.field-body
+        div.field.is-narrow
+          div.control
+            div.select
+              select(id=`site_${id}` name=`site` onchange=`onSiteChange(${id})`)
+                each site in configData.sites
+                  option(value=`${site.id}`) #{site.name}
+    div.field.is-horizontal.is-mobile
+      div.field-label
+        label(for=`city_${id}`) Miejsce:
+      div.field-body
+        div.field.is-narrow
+          div.control
+            div.select
+              select(id=`city_${id}` name=`city`)
+                each city in configData.sites[0].cities
+                  option() #{city}
+    div.field.is-horizontal.is-mobile
+      div.field-label
+        label(for=`abroad_${id}` title="Oddział terenowy") OT:
+      div.field-body
+        div.field.is-narrow
+          p.checkbox
+            input(id=`abroad_${id}`,
+                 type='checkbox',
+                 onchange=`onAbroadChange(${id});`)
+        div.field.is-narrow
+          div.control.is-hidden
+            input.input(id=`abroad_city_${id}`,
+                  name=`abroad_city`)
+    div.field.is-horizontal.is-mobile
+      div.field-label
+        label(for=`busdonation_${id}` title="Krwiobus") Krwiobus:
+      div.field-body
+        div.field.is-narrow
+          p.checkbox
+            input(id=`busdonation_${id}`
+                  name=`busdonation`
+                  type='checkbox'
+                  onchange=`onBusDonationChange(${id})`)

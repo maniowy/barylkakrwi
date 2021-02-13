@@ -1,0 +1,5 @@
+{
+  "path": "/var/log/barylka.log",
+  "timestamp": "YYYY-MM-DD HH:mm:ss.SSS",
+  "level": "trace"
+}

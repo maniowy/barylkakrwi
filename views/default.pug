@@ -1,0 +1,41 @@
+doctype html
+html(lang="pl-PL")
+  head
+    title #{title}
+    //-link(type='text/css', rel='stylesheet', href='/css/style.css')
+    link(type='text/css', rel='stylesheet', href='/css/styles.css')
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    meta(charset="utf-8")
+    meta(name="description" content="Formularz dodawania wpisów z donacjami krwi do wykopowej akcji Baryłka Krwi: https://wykop.pl/tag/wpisy/barylkakrwi")
+  script(defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js")
+  //-script(src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js")
+  //-script(src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/md5.min.js")
+  body
+    main
+      script(type='text/javascript').
+        const startDate = !{JSON.stringify(configData.startDate)}
+        const tags = !{JSON.stringify(configData.tags)};
+        const configData = !{JSON.stringify(configData)};
+
+      script
+        include /js/form.js
+      block header
+        section.section.hero.is-danger.pt-5.pb-5
+          div.hero-head
+            nav.level.is-mobile
+              div.container.level-item
+                h1.title #{title}
+              //-block navi
+              div.level-right
+                div.level-item
+                  div.tile.is-ancestor.is-vertical
+                    p.tile
+                      h3 #{user}
+                    p.tile
+                      a.button.is-danger.is-light.is-rounded(href="/disconnect" title="rozłącz")
+                        span.icon.is-small
+                          i.fas.fa-sign-out-alt
+      //-div(style="clear:both;")
+      section.section.pt-5
+        div.container.is-max-desktop.has-text-centered
+          block content

@@ -1,0 +1,78 @@
+{
+  "startDate":"2020-11-06",
+  "tags": ["#testowabaryłkakrwi", "#testowekrwiodawstwo"],
+  "volume":328000,
+  "kinds": [
+    {"id":"fullblood", "name": "krew pełna", "vol":450, "max":550},
+    {"id":"plasma", "name": "osocze", "vol":200, "max":300},
+    {"id":"platelets", "name": "płytki krwi", "vol":500, "max":500},
+    {"id":"platelets_big", "name": "płytki krwi duże", "vol":1000, "max":1000},
+    {"id":"platelets_plasma", "name": "płytki krwi z osoczem", "vol":650, "max":650},
+    {"id":"double_platelets", "name": "płytki krwi duże z osoczem", "vol":1000, "max":1000},
+    {"id":"red_cells", "name": "krwinki czerwone", "vol":500, "max":500},
+    {"id":"red_cells_big", "name": "krwinki czerwone duże", "vol":1000, "max":1000},
+    {"id":"red_cells_and_platelets", "name": "krwinki czerwone + płytki krwi", "vol":1000, "max":1000},
+    {"id":"white_cells", "name": "krwinki białe", "vol":2000, "max":2000}
+  ],
+  "groups": [
+    {"id":"secret", "name":""},
+    {"id":"unknown", "name":"nie znam"},
+    {"id":"zerominus", "name":"0 Rh-"},
+    {"id":"zeroplus", "name":"0 Rh+"},
+    {"id":"aminus", "name":"A Rh-"},
+    {"id":"aplus", "name":"A Rh+"},
+    {"id":"bminus", "name":"B Rh-"},
+    {"id":"bplus", "name":"B Rh+"},
+    {"id":"abminus", "name":"AB Rh-"},
+    {"id":"abplus", "name":"AB Rh+"}
+  ],
+  "sites": [
+    {"id":"rckik", "name":"RCKiK",
+        "cities": [
+            "",
+            "Białystok",
+            "Bydgoszcz",
+            "Gdańsk",
+            "Kalisz",
+            "Katowice",
+            "Kielce",
+            "Kraków",
+            "Lublin",
+            "Łódź",
+            "Olsztyn",
+            "Opole",
+            "Poznań",
+            "Racibórz",
+            "Radom",
+            "Rzeszów",
+            "Słupsk",
+            "Szczecin",
+            "Wałbrzych",
+            "Warszawa",
+            "Wrocław",
+            "Zielona Góra"
+        ]
+    },
+    {"id":"wckik", "name":"WCKiK",
+        "cities": [
+            "",
+            "Ełk",
+            "Gdańsk",
+            "Kraków",
+            "Lublin",
+            "Szczecin",
+            "Warszawa",
+            "Wrocław"
+        ]
+    },
+    {"id":"mswia", "name":"MSWiA", "cities": ["Warszawa"]},
+    {"id":"other", "name":"inna"}
+  ],
+  "orders": [
+    {"id":"zhdkiii", "name":"ZHDK III"},
+    {"id":"zhdkii", "name":"ZHDK II"},
+    {"id":"zhdki", "name":"ZHDK I"},
+    {"id":"zdzn", "name":"ZHDK ZDZN"},
+    {"id":"dp", "name":"Dawca Przeszczepu"}
+  ]
+}

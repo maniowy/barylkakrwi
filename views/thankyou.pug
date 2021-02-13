@@ -1,0 +1,8 @@
+extends default
+
+block content
+  div Dziękujemy! Twój wpis został pomyślnie dodany. Znajdziesz go tutaj: 
+    a(href=`https://www.wykop.pl/wpis/${id}`) link
+    | .
+  div
+    a.button.is-danger(href="/") Powrót do formularza
