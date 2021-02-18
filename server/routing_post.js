@@ -7,15 +7,6 @@ module.exports = function(router, config, logger) {
   // multi-part forms
   const formidable = require('formidable');
 
-  function validateInput(fields, files, onError) {
-    logger.debug("Validating input:", fields, files);
-    if (!files || !files.embed) {
-      onError("Załącz zdjęcie");
-      return false;
-    }
-    return true;
-  }
-
   function validateInputBody(body, onError) {
     logger.debug("Validating input:", body);
     // +dates should be present and in range
@@ -99,6 +90,7 @@ module.exports = function(router, config, logger) {
       onError("Załącz zdjęcie");
       return false;
     }
+    // FIXME validate file type
     return validateInputBody(body);
   }
 
@@ -158,6 +150,9 @@ module.exports = function(router, config, logger) {
     const login = req.cookies.userData ? req.cookies.userData.login: null;
     WykopAPI.retrieveCurrentVolumeAndRecentUserEntry(login, (volume, date) => {
       const volumes = donations.map(d => d.volume);
+      if (volume < 0) {
+        volume = config.data.volume;
+      }
       const newVolume = volume - volumes.reduce((acc, cur) => acc + cur, 0);
       output = `${volume} - ${volumes.join(" - ")} = ${newVolume}\n${output}`;
       onReady(output);
