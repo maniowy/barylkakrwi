@@ -68,7 +68,7 @@ module.exports = function(router, config, logger) {
   }
 
   module.connect = (req, res) => {
-    let url = WykopAPI.connectUrl('http://barylka.bieda.it/storeSession');
+    let url = WykopAPI.connectUrl(`http://${req.headers.host}/storeSession`);
     logger.debug("redirecting to: ", url);
     res.redirect(url);
   }

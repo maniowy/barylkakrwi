@@ -17,7 +17,7 @@ const config = {
 const router = express.Router();
 
 const subdomainForward = require('./server/subdomainForward.js');
-app.use(subdomainForward(['barylka.bieda.it'], router));
+app.use(subdomainForward(['barylka.bieda.it', 'localhost'], router));
 
 const getRouting = require('./server/routing_get.js')(router, config, logger);
 router.get('/', getRouting.root);
