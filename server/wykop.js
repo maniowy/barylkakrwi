@@ -110,22 +110,24 @@ function getDonationDate(text) {
 }
 
 class Wykop {
-    baseUrl = "https://a2.wykop.pl";
-    queries = {
-        connect: "/login/connect",
-        login: "/Login/Index",
-        tags: "/Tags/Entries/barylkakrwi",
-        appKey: "/appkey/",
-        userKey: "/userkey/",
-        clearOutput: "/output/clear"
-    }
-    urlParams = {
-        connect: ["login", "connect"],
-        login: ["Login", "Index"],
-        addEntry: ["Entries", "Add"],
-        tags: ["Tags"]
-    }
+    constructor() {
+        this.baseUrl = "https://a2.wykop.pl";
+        this.queries = {
+            connect: "/login/connect",
+            login: "/Login/Index",
+            tags: "/Tags/Entries/barylkakrwi",
+            appKey: "/appkey/",
+            userKey: "/userkey/",
+            clearOutput: "/output/clear"
+        }
+        this.urlParams = {
+            connect: ["login", "connect"],
+            login: ["Login", "Index"],
+            addEntry: ["Entries", "Add"],
+            tags: ["Tags"]
+        }
 
+    }
     provideSecrets(confidential) {
         this.appKey = confidential.appkey;
         this.secret = confidential.secret;
