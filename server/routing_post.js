@@ -24,6 +24,12 @@ module.exports = function(router, config, logger) {
       onError(`Nieprawidłowe żądanie: brak donacji`);
       return false;
     }
+    const dates = body.donations.map(d => d.date);
+    if (dates.length != new Set(dates).size) {
+      logger.debug("Repeating dates");
+      onError("Wykryto powtarzające się daty donacji");
+      return false;
+    }
     for (d of body.donations) {
       const date = new Date(d.date);
       if (d.date === undefined || date < startDate || date > today) {

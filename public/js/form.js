@@ -112,7 +112,7 @@ function submitForm() {
     .catch(err => console.error(err));
 }
 
-function requestPreview(onReady) {
+function requestPreview(onReady, onError) {
   let request = collectFormData();
 
   const fd = new FormData();
@@ -137,10 +137,12 @@ function requestPreview(onReady) {
         else if (res.status == 401) {
             console.error("unauthorized");
             res.text().then(txt => console.error(txt));
+            onError();
         } else if (res.status == 400) {
             res.text().then(txt => {
                 console.error(txt);
                 popupError(txt);
+                onError();
             });
         }
     })
@@ -157,6 +159,11 @@ function showPreview() {
   let button = document.getElementById("previewButton");
   button.classList.add('is-loading');
   button.disabled = true;
+
+  const activateButton = function() {
+      button.disabled = false;
+      button.classList.remove('is-loading');
+  }
 
   requestPreview(response => {
       const out = document.getElementById("previewOutput");
@@ -179,9 +186,8 @@ function showPreview() {
       }
       let preview = document.getElementById("preview");
       preview.classList.add('is-active');
-      button.disabled = false;
-      button.classList.remove('is-loading');
-  });
+      activateButton();
+  }, activateButton);
 }
 
 function hidePreview() {
