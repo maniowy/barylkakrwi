@@ -64,11 +64,12 @@ mixin donation(id, deletable)
                   onchange=`onBusDonationChange(${id})`)
         div.control.pb-3.pt-1
           label.checkbox(for=`abroad_${id}` title="Oddział terenowy") OT:
-            input.ml-1(id=`abroad_${id}`,
-                 type='checkbox',
+            input.ml-1(id=`abroad_${id}`
+                 type='checkbox'
                  onchange=`onAbroadChange(${id});`)
         div.control.is-expanded.is-hidden
-          input.input.is-small.is-fullwidth(id=`abroad_city_${id}`,
+          input.input.is-small.is-fullwidth(id=`abroad_city_${id}`
+                placeholder="Oddział terenowy"
                 name=`abroad_city`)
     if deletable
       a.button.deleteButton.is-danger.is-small.mr-1.mb-1(
