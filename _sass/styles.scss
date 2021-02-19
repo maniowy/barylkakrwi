@@ -1,0 +1,109 @@
+@charset "utf-8";
+
+// Bulma customization
+// 1. Import the initial variables
+@import "../node_modules/bulma/sass/utilities/initial-variables";
+
+// 2. Set your own initial variables
+$red: #d0451b;
+$container-offset: (2 * $gap);
+$size-normal: 0.75rem;
+$size-6: 0.75rem;
+//$size-7: 0.7rem;
+
+// 3. Set the derived variables
+//$danger: $red;
+
+// 4. Import the rest of Bulma
+@import "../node_modules/bulma/bulma";
+
+// Own stuff
+
+//form {
+//  display: inline-block;
+//}
+
+.createButton {
+  display:none;
+}
+
+fieldset:last-of-type {
+  .createButton {
+    display:inline-block;
+  }
+}
+
+fieldset:nth-child(even) {
+  background-color: $light
+}
+
+fieldset {
+    border-radius: 8px;
+}
+
+.field:not(:last-child) {
+    margin-bottom: 0.4rem;
+}
+
+.field.is-horizontal.is-mobile {
+    @include from(340px) {
+        display: flex;
+        .field-label {
+            flex-basis: 0;
+            @include mobile {
+                flex-grow: 1;
+            }
+            @include from($tablet) {
+                flex-grow: 2;
+            }
+            flex-shrink: 0;
+            text-align: right;
+            margin-right: 0.75rem;
+        }
+        .field-body {
+            display: flex;
+            flex-basis: 0;
+            @include mobile {
+                flex-grow: 4;
+            }
+            @include from($tablet) {
+                flex-grow: 5;
+            }
+            flex-shrink: 1;
+            .field {
+                margin-bottom: 0;
+            }
+            & > .field {
+                flex-shrink: 1;
+                &:not(.is-narrow) {
+                    flex-grow: 1;
+                }
+                &:not(:last-child) {
+                    margin-right: 0.75rem;
+                }
+            }
+        }
+    }
+}
+
+.field-label {
+    @include mobile {
+        font-size: $size-small;
+    }
+    @include from($tablet) {
+        flex-grow: 2;
+    }
+}
+
+label.is-small {
+    font-size: $size-small;
+}
+
+.modal-content {
+    background: #FFF;
+    border-radius: 8px;
+}
+
+#errorModalContent {
+    width: auto;
+}
