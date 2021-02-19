@@ -1,5 +1,3 @@
-onDonationKindChange(0);
-
 function switchToNightMode() {
   let body = document.body;
   body.classList.remove("daylight");

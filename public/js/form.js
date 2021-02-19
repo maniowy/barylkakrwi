@@ -194,12 +194,6 @@ function onDonationKindChange(id) {
   let kind = document.getElementById(`kind_${id}`);
   volume.value = configData.kinds[kind.selectedIndex].vol
   volume.max = configData.kinds[kind.selectedIndex].max
-
-  let hiddenKind = document.getElementById(`hidden_kind_${id}`);
-  hiddenKind.firstElementChild.innerText = kind.selectedOptions[0].innerText;
-  hiddenKind.classList.remove("is-hidden");
-  kind.style.width = `${hiddenKind.offsetWidth}px`;
-  hiddenKind.classList.add("is-hidden");
 }
 
 // https://krwiodawcy.org/gdzie-mozna-oddac-krew
@@ -261,6 +255,8 @@ function today() {
 
 // FIXME try to copy last donation & modify ID
 async function createDonation() {
+  Array.from(document.getElementsByClassName("createButton"))
+    .forEach( b => b.classList.add("is-loading") );
   let donations = document.getElementsByClassName("donation");
   let len = donations.length;
   let id = parseInt(donations[len-1].getAttribute("donationId")) + 1;
@@ -268,11 +264,17 @@ async function createDonation() {
   XHR.open('GET', "/donation/"+id);
   XHR.responseType="text";
   XHR.onload = () => {
-      donations[len-1].insertAdjacentHTML("afterend", XHR.response);
-      let dates = document.getElementsByClassName("donationDate");
-      const t = today();
-      dates[len].max = t;
-      dates[len].value = t;
+    donations[len-1].insertAdjacentHTML("afterend", XHR.response);
+    let crs = Array.from(document.getElementsByClassName("createButton"));
+    crs.forEach( b => {
+      b.classList.remove("is-loading");
+      b.classList.add("is-hidden");
+    });
+    crs[crs.length - 1].classList.remove("is-hidden");
+    let dates = document.getElementsByClassName("donationDate");
+    const t = today();
+    dates[len].max = t;
+    dates[len].value = t;
   }
   XHR.send();
 }
@@ -284,6 +286,8 @@ function deleteDonation(id) {
   let donation = document.getElementById(`donation_${id}`);
   if (donation) {
     donation.remove();
+    let crs = Array.from(document.getElementsByClassName("createButton"));
+    crs[crs.length - 1].classList.remove("is-hidden");
   }
 }
 

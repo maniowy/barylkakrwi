@@ -23,87 +23,141 @@ $size-6: 0.75rem;
 //  display: inline-block;
 //}
 
-.createButton {
-  display:none;
+.column {
+  padding: 0.1rem;
 }
 
-fieldset:last-of-type {
-  .createButton {
-    display:inline-block;
-  }
+.createButton, .deleteButton {
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
 }
 
-fieldset:nth-child(even) {
-  background-color: $light
+.box {
+  padding: 0.45rem;
 }
 
-fieldset {
-    border-radius: 8px;
+form fieldset {
+  border-radius: 8px;
+  border-style: dashed;
+  border-width: thin;
+  border-color: lightgray;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  background-color: white;
+}
+
+fieldset fieldset {
+  border-radius: 0px;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+fieldset > legend {
+  padding: 0 0.25rem;
+}
+
+fieldset div {
+  background-color:inherit;
 }
 
 .field:not(:last-child) {
-    margin-bottom: 0.4rem;
+  margin-bottom: 0.4rem;
 }
 
 .field.is-horizontal.is-mobile {
-    @include from(340px) {
-        display: flex;
-        .field-label {
-            flex-basis: 0;
-            @include mobile {
-                flex-grow: 1;
-            }
-            @include from($tablet) {
-                flex-grow: 2;
-            }
-            flex-shrink: 0;
-            text-align: right;
-            margin-right: 0.75rem;
-        }
-        .field-body {
-            display: flex;
-            flex-basis: 0;
-            @include mobile {
-                flex-grow: 4;
-            }
-            @include from($tablet) {
-                flex-grow: 5;
-            }
-            flex-shrink: 1;
-            .field {
-                margin-bottom: 0;
-            }
-            & > .field {
-                flex-shrink: 1;
-                &:not(.is-narrow) {
-                    flex-grow: 1;
-                }
-                &:not(:last-child) {
-                    margin-right: 0.75rem;
-                }
-            }
-        }
+  @include from(340px) {
+    display: flex;
+    .field-label {
+      flex-basis: 0;
+      @include mobile {
+        flex-grow: 1;
+      }
+      @include from($tablet) {
+        flex-grow: 2;
+      }
+      flex-shrink: 0;
+      text-align: right;
+      margin-right: 0.75rem;
     }
+    .field-body {
+      display: flex;
+      flex-basis: 0;
+      @include mobile {
+        flex-grow: 4;
+      }
+      @include from($tablet) {
+        flex-grow: 5;
+      }
+      flex-shrink: 1;
+      .field {
+        margin-bottom: 0;
+      }
+      & > .field {
+        flex-shrink: 1;
+        &:not(.is-narrow) {
+          flex-grow: 1;
+        }
+        &:not(:last-child) {
+          margin-right: 0.75rem;
+        }
+      }
+    }
+  }
 }
 
 .field-label {
-    @include mobile {
-        font-size: $size-small;
-    }
-    @include from($tablet) {
-        flex-grow: 2;
-    }
+  @include mobile {
+    font-size: $size-small;
+  }
+  @include from($tablet) {
+    flex-grow: 2;
+  }
+}
+
+.field-body > .control.is-expanded {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.label-on-border {
+  position: relative;
+}
+
+label.on-border {
+  position:absolute;
+  top: -12px;
+  left: 8px;
+  z-index: 1;
+  background-color: inherit;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
 }
 
 label.is-small {
-    font-size: $size-small;
+  font-size: $size-small;
+}
+
+.file-option {
+  background-color: whitesmoke;
+  color: #4a4a4a;
+  border: 1px solid transparent;
+  border-color: #dbdbdb;
+  border-radius: 4px;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: calc(0.5em - 1px);
+  padding-bottom: calc(0.5em - 1px);
+  white-space: nowrap;
 }
 
 .modal-content {
-    background: #FFF;
-    border-radius: 8px;
+  background: #FFF;
+  border-radius: 8px;
 }
 
 #errorModalContent {
-    width: auto;
+  width: auto;
 }
