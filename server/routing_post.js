@@ -101,6 +101,13 @@ module.exports = function(router, config, logger) {
     return validateInputBody(body);
   }
 
+  function allOrOne(arr, sep) {
+    if (new Set(arr).size == 1) {
+      return arr[0];
+    }
+    return arr.join(sep);
+  }
+
   function composeMessage(req, body, onReady) {
     let output = "";
     const donations = body.donations;
@@ -110,9 +117,9 @@ module.exports = function(router, config, logger) {
     const dateRegex = /(\d{4})-(\d{2})-(\d{2})/;
     output += donations.map(d => d.date.replace(dateRegex, '$3.$2.$1')).join(sep);
     output += "\nRodzaj donacji - ";
-    output += donations.map(d => d.kind).join(sep);
+    output += allOrOne(donations.map(d => d.kind), sep);
 
-    const cities = donations.filter(d => d.city).map(d => {
+    const cities = allOrOne(donations.filter(d => d.city).map(d => {
       let out = "";
       if (d.site != config.data.sites[config.data.sites.length - 1].name) {
         out += `${d.site} `;
@@ -125,7 +132,7 @@ module.exports = function(router, config, logger) {
         out += " (donacja w krwiobusie)";
       }
       return out;
-    }).join(sep);
+    }), sep);
 
     if (cities.length) {
       output += `\nMiejsce donacji - ${cities}`;
