@@ -157,7 +157,7 @@ module.exports = function(router, config, logger) {
     const addr = "https://barylkakrwi.org";
 
     output += `\n\nWpis został dodany za pomocą [tego skryptu](${addr}/skrypt).`;
-    output += `\n[regulamin](${addr}/regulamin) | [wzór wpisu](https://www.wykop.pl/wpis/49653241) | [strona akcji](${addr})`;
+    output += `\n[Regulamin](${addr}/regulamin) | [Wzór wpisu](https://www.wykop.pl/wpis/49653241) | [Strona akcji](${addr})`;
 
     const missingTags = config.data.tags.filter(tag => {
       return output.match(tag) == null
