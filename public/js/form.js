@@ -175,6 +175,10 @@ function showPreview() {
   requestPreview(response => {
       const out = document.getElementById("previewOutput");
       out.innerText = response.body;
+      const links = [...out.innerText.matchAll(/\[(.*?)\]\((.*?)\)/g)];
+      for (l of links) {
+        out.innerHTML = out.innerHTML.replace(l[0], `<a href="${l[2]}" target="_blank">${l[1]}</a>`);
+      }
       const imgs = document.getElementById("previewImages");
       while (imgs.firstChild) {
           imgs.removeChild(imgs.firstChild);

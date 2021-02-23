@@ -45,6 +45,7 @@ module.exports = function(router, config, logger) {
       }
       // FIXME work on indices
       const configKind = config.data.kinds.find(k => k.name == d.kind);
+      // issue: plasma volume is divided by 3 but here it is compared to max value before division
       if (!Number.isInteger(d.volume) || d.volume <= 0 || d.volume > configKind.max) {
         logger.debug(`Volume out of range (0, ${configKind.max}]: ${d.volume}`);
         onError(`Nieprawidłowa objętość donacji: ${d.volume} nie mieści się w zakresie (0, ${configKind.max}]`);
@@ -145,6 +146,11 @@ module.exports = function(router, config, logger) {
     if (body.msg) {
       output += `\n${body.msg}`;
     }
+
+    const addr = "https://barylkakrwi.org";
+
+    output += `\n\nWpis został dodany za pomocą [tego skryptu](${addr}/skrypt).`;
+    output += `\n[regulamin](${addr}/regulamin) [wzór wpisu](https://www.wykop.pl/wpis/50177483) [strona akcji](${addr})`;
 
     const missingTags = config.data.tags.filter(tag => {
       return output.match(tag) == null
