@@ -21,6 +21,13 @@ function updateFilename() {
   }
 }
 
+function scaleVolume(volume, kind) {
+  if (kind == "osocze") {
+    return Math.floor(volume/30)*10
+  }
+  return volume;
+}
+
 function collectFormData() {
   const dateItems = document.getElementsByClassName("donationDate");
   const idsDatesMap = new Map([...dateItems].map(d => [parseInt(d.getAttribute("donationId")), d.value]));
@@ -28,7 +35,7 @@ function collectFormData() {
       const id = parseInt(d.getAttribute("donationId"));
       const date = d.value;
       const kind = document.getElementById(`kind_${id}`)?.selectedOptions[0].innerText;
-      const volume = parseInt(document.getElementById(`volume_${id}`)?.value);
+      const volume = scaleVolume(parseInt(document.getElementById(`volume_${id}`)?.value), kind);
       const site = document.getElementById(`site_${id}`)?.selectedOptions[0].innerText;
       const city = document.getElementById(`city_${id}`)?.value;
       const abroad = document.getElementById(`abroad_${id}`)?.checked;
@@ -195,11 +202,44 @@ function hidePreview() {
   preview.classList.remove('is-active');
 }
 
+function onPlasmaVolumeChange(id) {
+  console.debug(`onPlasmaVolumeChange: ${id}`);
+  let volume = document.getElementById(`volume_${id}`);
+  let volumeParent = volume.parentElement.parentElement;
+  let descriptionBox = volumeParent.children[1];
+  let desc = descriptionBox.firstElementChild.firstElementChild;
+  desc.innerText = `= ${scaleVolume(parseInt(volume.value), "osocze")} ml KP`;
+}
+
 function onDonationKindChange(id) {
   let volume = document.getElementById(`volume_${id}`);
-  let kind = document.getElementById(`kind_${id}`);
+  const kind = document.getElementById(`kind_${id}`);
   volume.value = configData.kinds[kind.selectedIndex].vol
   volume.max = configData.kinds[kind.selectedIndex].max
+  volume.setAttribute('onchange', null);
+
+  let volumeParent = volume.parentElement.parentElement;
+  if (kind.selectedIndex == 0) {
+    volumeParent.classList.remove("has-addons");
+    volumeParent.children[1].classList.add("is-hidden");
+    volume.parentElement.title = "Objętość oddanej krwi pełnej"
+    volume.readOnly = false;
+  } else {
+    volumeParent.classList.add("has-addons");
+    let descriptionBox = volumeParent.children[1];
+    descriptionBox.classList.remove("is-hidden");
+    let desc = descriptionBox.firstElementChild.firstElementChild
+    if (kind.selectedIndex == 1) {
+      desc.innerText = `= ${scaleVolume(parseInt(volume.value), "osocze")} ml KP`;
+      volume.parentElement.title = "Rzeczywista objętość oddanego osocza";
+      volume.setAttribute('onchange', `onPlasmaVolumeChange(${id})`);
+      volume.readOnly = false;
+    } else {
+      desc.innerText = "";
+      volume.parentElement.title = "Objętość składników krwi przeliczona na krew pełną";
+      volume.readOnly = true;
+    }
+  }
 }
 
 // https://krwiodawcy.org/gdzie-mozna-oddac-krew
@@ -308,3 +348,14 @@ function dismissError() {
   let error = document.getElementById("error");
   error.classList.remove('is-active');
 }
+
+function popupDescription() {
+  let description = document.getElementById("description");
+  description.classList.add('is-active');
+}
+
+function hideDescription() {
+  let description = document.getElementById("description");
+  description.classList.remove('is-active');
+}
+

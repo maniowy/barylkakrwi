@@ -23,22 +23,21 @@ mixin donation(id, deletable)
               option(value=`${kind.id}`) #{kind.name}
     div.field.label-on-border.mt-4
       label.on-border.is-small(for=`volume_${id}`) Objętość
-      p.control.has-icons-right(title="Ekwiwalent objętości krwi pełnej")
-        input.input(id=`volume_${id}`,
-              name=`volume`,
-              class="volume",
-              type='number',
-              min=0,
-              max=2000,
-              value=450,
-              required)
-        span.icon.is-right ml
-      a.icon.is-hidden.is-pulled-right(href="https://krwiodawcy.org/kalkulator-donacji",
-        rel="noopener noreferrer",
-        target="_blank"
-        tabindex=-1
-        title="Przejdź do kalkulatora donacji")
-        i.fas.fa-calculator
+      div.field
+        p.control.is-expanded.has-icons-right(title="Objętość oddanej krwi pełnej")
+          input.input(id=`volume_${id}`,
+                name=`volume`,
+                class="volume",
+                type='number',
+                min=0,
+                max=2000,
+                value=450,
+                required)
+          span.icon.is-right ml
+        p.control.is-hidden(title="Wyjaśnienie" onclick="popupDescription();")
+          span.button.is-static
+            span //- empty, used for plasma
+            i.fas.fa-question-circle.ml-1
     fieldset
       legend.pb-2
         label.is-small Placówka

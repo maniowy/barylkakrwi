@@ -85,5 +85,24 @@ block content
         div.message-body
           p#errorOutput
           button.button.is-danger(onclick="dismissError();") Zamknij
+  div.modal#description
+    div.modal-background(onclick="hideDescription();")
+    div.modal-content#descriptionModalContent
+      div.message.is-info
+        div.message-header
+          div Kalkulator donacji
+          button.delete.is-large(onclick="hideDescription();")
+        div.message-body
+          div#descriptionOutput Składniki krwi przeliczane są na ekwiwalent krwi pełnej zgodnie z 
+            a(href="https://krwiodawcy.org/kalkulator-donacji",
+              rel="noopener noreferrer",
+              target="_blank"
+              tabindex=-1
+              title="Przejdź do kalkulatora donacji")
+              span kalkulatorem
+              span.icon
+                i.fas.fa-calculator
+            | .
+          div.mb-2 Dodatkowo osocze zaokrąglamy w dół do najbliższych 10 ml.
   script
     include /js/lazy.js

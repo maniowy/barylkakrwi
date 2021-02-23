@@ -4,7 +4,7 @@
   "volume":328000,
   "kinds": [
     {"id":"fullblood", "name": "krew pełna", "vol":450, "max":550},
-    {"id":"plasma", "name": "osocze", "vol":200, "max":300},
+    {"id":"plasma", "name": "osocze", "vol":600, "max":1000},
     {"id":"platelets", "name": "płytki krwi", "vol":500, "max":500},
     {"id":"platelets_big", "name": "płytki krwi duże", "vol":1000, "max":1000},
     {"id":"platelets_plasma", "name": "płytki krwi z osoczem", "vol":650, "max":650},
