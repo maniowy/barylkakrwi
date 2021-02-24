@@ -35,14 +35,15 @@ adjustDateRange();
 
 async function updateProgressBar() {
     let spinner = document.getElementById("progressBarSpinner");
-    let meter = document.createElement("meter");
+    let meter = document.createElement("progress");
+    meter.classList.add("progress");
     meter.id = "progressBar";
     let text = document.getElementById("percentText");
     retrieveCurrentVolumeAndRecentDate((volume, date) => {
         const full = configData.volume;
         meter.value = (full - volume)/full;
         spinner.replaceWith(meter);
-        text.innerText = ` (${Math.round((100*meter.value + Number.EPSILON)*100)/100}%)`
+        text.innerText = ` ${Math.round((100*meter.value + Number.EPSILON)*100)/100}%`
     });
 }
 updateProgressBar();

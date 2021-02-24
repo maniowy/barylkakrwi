@@ -23,8 +23,16 @@ html(lang="pl-PL")
         section.section.hero.is-danger.pt-3.pb-4
           div.hero-head
             nav.level.is-mobile
-              div.container.level-item
-                h1.title #{title}
+              div.container.level-item.is-flex.is-flex-direction-column
+                div.title
+                  h1.title #{title}
+                div.is-flex
+                  span.has-text-small Poziom krwi:
+                    label#percentText
+                div.is-flex
+                  span#progressBarSpinner.icon
+                    i.fas.fa-spinner.fa-pulse
+                  //-progress.progress#progressBar
               //-block navi
               div.level-right
                 div.level-item
