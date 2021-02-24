@@ -4,7 +4,7 @@
   "description": "Barylka krwi",
   "scripts": {
     "css-build": "node-sass --omit-source-map-url client/styles.scss public/css/styles.css",
-    "css-postcss": "postcss --use autoprefixer --map false --output public/css/styles.css public/css/styles.css",
+    "css-postcss": "postcss --map false --output public/css/styles.css public/css/styles.css",
     "css-deploy": "npm run css-build && npm run css-postcss",
     "css-watch": "npm run css-build -- --watch",
     "js-build": "babel _javascript --out-dir lib",
@@ -16,6 +16,7 @@
     "autoprefixer": "^10.0.1",
     "bulma": "^0.9.1",
     "cookie-parser": "^1.4.5",
+    "css-byebye": "^2.0.2",
     "express": "^4.17.1",
     "filereader": "^0.10.3",
     "form-data": "^3.0.0",
@@ -23,6 +24,7 @@
     "formidable": "^1.2.2",
     "md5": "^2.0.0",
     "node-sass": "^4.14.1",
+    "postcss-discard-empty": "^4.0.1",
     "pug": "^2.0.3",
     "simple-node-logger": "^18.12.24",
     "wykop-nodejs": "^1.0.8"
