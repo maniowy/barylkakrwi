@@ -84,61 +84,6 @@ fieldset div {
   margin-bottom: 0.4rem;
 }
 
-.field.is-horizontal.is-mobile {
-  @include from(340px) {
-    display: flex;
-    .field-label {
-      flex-basis: 0;
-      @include mobile {
-        flex-grow: 1;
-      }
-      @include from($tablet) {
-        flex-grow: 2;
-      }
-      flex-shrink: 0;
-      text-align: right;
-      margin-right: 0.75rem;
-    }
-    .field-body {
-      display: flex;
-      flex-basis: 0;
-      @include mobile {
-        flex-grow: 4;
-      }
-      @include from($tablet) {
-        flex-grow: 5;
-      }
-      flex-shrink: 1;
-      .field {
-        margin-bottom: 0;
-      }
-      & > .field {
-        flex-shrink: 1;
-        &:not(.is-narrow) {
-          flex-grow: 1;
-        }
-        &:not(:last-child) {
-          margin-right: 0.75rem;
-        }
-      }
-    }
-  }
-}
-
-.field-label {
-  @include mobile {
-    font-size: $size-small;
-  }
-  @include from($tablet) {
-    flex-grow: 2;
-  }
-}
-
-.field-body > .control.is-expanded {
-  flex-grow: 1;
-  flex-shrink: 1;
-}
-
 .label-on-border {
   position: relative;
 }
