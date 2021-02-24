@@ -1,7 +1,7 @@
 function retrieveCurrentVolumeAndRecentDate(onReady) {
   let XHR = new XMLHttpRequest();
   XHR.responseType="text";
-  XHR.open('GET', '/latest');
+  XHR.open('GET', `${urlPrefix}/latest`);
   XHR.onload = () => {
       const response = JSON.parse(XHR.response);
       const volume = response["volume"];
@@ -87,7 +87,7 @@ function submitForm() {
       fd.append('embed', f);
   }
 
-  fetch("/addEntry", {
+  fetch(`${urlPrefix}/addEntry`, {
       method: 'POST',
       body: fd
   })
@@ -125,7 +125,7 @@ function requestPreview(onReady, onError) {
   const fd = new FormData();
   fd.append("body", JSON.stringify(request));
 
-  fetch("/preview", {
+  fetch(`${urlPrefix}/preview`, {
       method: 'POST',
       body: fd
   })
@@ -311,7 +311,7 @@ async function createDonation() {
   let len = donations.length;
   let id = parseInt(donations[len-1].getAttribute("donationId")) + 1;
   let XHR = new XMLHttpRequest();
-  XHR.open('GET', "/donation/"+id);
+  XHR.open('GET', `${urlPrefix}/donation/${id}`);
   XHR.responseType="text";
   XHR.onload = () => {
     donations[len-1].insertAdjacentHTML("afterend", XHR.response);

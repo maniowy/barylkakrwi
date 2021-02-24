@@ -25,7 +25,8 @@ module.exports = function(router, config, logger) {
     let userData = req.cookies.userData;
     if (userData == undefined) {
       logger.debug("userData cookie not set");
-      res.redirect('/connect');
+      const prefix = config.server.urlprefix ? `/${config.server.urlprefix}` :"";
+      res.redirect(`${prefix}/connect`);
       return
     }
     else {
@@ -36,6 +37,8 @@ module.exports = function(router, config, logger) {
       title: 'Baryłka krwi',
       basedir: 'public',
       configData: config.data,
+      appPrefix: config.server.appprefix,
+      urlPrefix: config.server.urlprefix,
       user: userData.login
     });
   };
@@ -61,6 +64,8 @@ module.exports = function(router, config, logger) {
     res.render('thankyou', {
       basedir: 'public',
       configData: config.data,
+      appPrefix: config.server.appprefix,
+      urlPrefix: config.server.urlprefix,
       id: req.params.id,
       title: 'Baryłka krwi',
       user: userData.login
@@ -68,7 +73,8 @@ module.exports = function(router, config, logger) {
   }
 
   module.connect = (req, res) => {
-    let url = WykopAPI.connectUrl(`http://${req.headers.host}/storeSession`);
+    const urlPrefix = config.server.urlprefix ? `/${config.server.urlprefix}` : "";
+    let url = WykopAPI.connectUrl(`http://${req.headers.host}${urlPrefix}/storeSession`);
     logger.debug("redirecting to: ", url);
     res.redirect(url);
   }
@@ -95,7 +101,7 @@ module.exports = function(router, config, logger) {
         res.cookie('userData', {login: out.data.profile.login, userkey: out.data.userkey},
           { maxAge: 24*60*60*1000, httpOnly: true});
         WykopAPI.userKey = out.data.userkey;
-        res.redirect('/');
+        res.redirect(`/${config.server.urlprefix}`);
       }
       else {
         res.sendStatus(sts);
@@ -106,11 +112,11 @@ module.exports = function(router, config, logger) {
   module.disconnect = (req, res) => {
     logger.debug("cookie: ", req.cookies.userData);
     res.clearCookie('userData', {httpOnly: true});
-    res.redirect('/');
+    res.redirect(`/${config.server.urlprefix}`);
   }
 
   module.any = (req, res) => {
-    res.redirect('/');
+    res.redirect(`/${config.server.urlprefix}`);
   }
 
   return module
