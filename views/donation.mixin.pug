@@ -33,7 +33,7 @@ mixin donation(id, deletable)
                 max=2000,
                 value=450,
                 required)
-          span.icon.is-right ml
+          span.icon.is-right.has-text-black ml
         p.control.is-hidden(title="Wyjaśnienie" onclick="popupDescription();")
           span.button.is-static
             span //- empty, used for plasma
@@ -49,7 +49,7 @@ mixin donation(id, deletable)
               each site in configData.sites
                 option(value=`${site.id}`) #{site.name}
         div.control.is-expanded.label-on-border.mt-2
-          label.on-border.is-small Miasto
+          label.on-border.is-small(for=`city_${id}`) Miasto
           div.select.is-fullwidth
             select(id=`city_${id}` name=`city`)
               each city in configData.sites[0].cities
