@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Barylka krwi",
   "scripts": {
-    "css-build": "node-sass _sass/styles.scss public/css/styles.css",
+    "css-build": "node-sass client/styles.scss public/css/styles.css",
     "css-postcss": "postcss --use autoprefixer --output public/css/styles.css public/css/styles.css",
     "css-deploy": "npm run css-build && npm run css-postcss",
     "css-watch": "npm run css-build -- --watch",
