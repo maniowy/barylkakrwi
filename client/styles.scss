@@ -53,6 +53,12 @@ $size-6: 0.75rem;
   padding: 0.45rem;
 }
 
+#formcolumn {
+  @include from($tablet) {
+    margin: 0 auto;
+  }
+}
+
 form fieldset {
   border-radius: 8px;
   border-style: dashed;

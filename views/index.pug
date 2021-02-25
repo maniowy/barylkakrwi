@@ -7,7 +7,7 @@ include ./donation.mixin.pug
 block content
   div.container.mt-4
     div.columns
-      div.column.is-half
+      div.column.is-half#formcolumn
         div.box
           form.has-text-left#inputform(onsubmit="return submitForm();")
             div.container
@@ -62,7 +62,6 @@ block content
               div.field.buttons.mt-2
                 button.button.is-danger#submit(type='submit') Wyślij
                 button.button.is-danger#previewButton(type='button' name='previewButton', onclick="showPreview();") Podgląd
-      div.column
   div.modal#preview
     div.modal-background(onclick="hidePreview();")
     div.modal-content
