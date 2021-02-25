@@ -36,8 +36,8 @@ mixin donation(id, deletable)
           span.icon.is-right.has-text-black ml
         p.control.is-hidden(title="Wyjaśnienie" onclick="popupDescription();")
           span.button.is-static
-            span //- empty, used for plasma
-            i.fas.fa-question-circle.ml-1
+            span.is-hidden.mr-1 //- empty, used for plasma
+            i.fas.fa-question-circle
     fieldset
       legend.pb-2
         label.is-small Placówka

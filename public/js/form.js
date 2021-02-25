@@ -235,11 +235,13 @@ function onDonationKindChange(id) {
     let desc = descriptionBox.firstElementChild.firstElementChild
     if (kind.selectedIndex == 1) {
       desc.innerText = `= ${scaleVolume(parseInt(volume.value), "osocze")} ml KP`;
+      desc.classList.remove("is-hidden");
       volume.parentElement.title = "Rzeczywista objętość oddanego osocza";
       volume.setAttribute('onchange', `onPlasmaVolumeChange(${id})`);
       volume.readOnly = false;
     } else {
       desc.innerText = "";
+      desc.classList.add("is-hidden");
       volume.parentElement.title = "Objętość składników krwi przeliczona na krew pełną";
       volume.readOnly = true;
     }
