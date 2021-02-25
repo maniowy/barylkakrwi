@@ -49,7 +49,7 @@ async function updateProgressBar() {
 updateProgressBar();
 
 async function disableDefaultSubmit() {
-    document.getElementById('inputform').
+    document.getElementById('inputform')?.
         addEventListener('submit', event => event.preventDefault());
 }
 disableDefaultSubmit();
