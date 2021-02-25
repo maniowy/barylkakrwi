@@ -64,9 +64,9 @@ block content
                 button.button.is-danger#previewButton(type='button' name='previewButton', onclick="showPreview();") Podgląd
   div.modal#preview
     div.modal-background(onclick="hidePreview();")
-    div.modal-content
-      p#previewOutput
-      div#previewImages
+    div.modal-content.has-text-left
+      p.mb-2.ml-2.mr-2.mt-2#previewOutput
+      div.mb-2.ml-2.mr-2.mt-2#previewImages
     button.modal-close.is-large(onclick="hidePreview();")
   div.modal#error
     div.modal-background(onclick="dismissError();")
