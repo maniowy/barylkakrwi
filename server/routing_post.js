@@ -151,7 +151,7 @@ module.exports = function(router, config, logger) {
     }
 
     if (body.msg) {
-      output += `\n\n${body.msg}`;
+      output += `\n\n${body.msg.trim()}`;
     }
 
     const addr = "https://barylkakrwi.org";

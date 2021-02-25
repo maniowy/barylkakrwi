@@ -58,7 +58,10 @@ block content
                 div.field.label-on-border.mt-4.mb-1
                   label.on-border.is-small(for='message') Wiadomość
                   p.control
-                    textarea#message.textarea(name='message' placeholder='Wiadomość') #{configData.tags.join(" ")}
+                    textarea#message.textarea(name='message' placeholder='Wiadomość')
+                      | 
+                      | 
+                      | #{configData.tags.join(" ")}
               div.field.buttons.mt-2
                 button.button.is-danger#submit(type='submit') Wyślij
                 button.button.is-danger#previewButton(type='button' name='previewButton', onclick="showPreview();") Podgląd
