@@ -98,7 +98,7 @@ function submitForm() {
                 console.log(txt)
                 const data = JSON.parse(txt);
                 console.log(`id: ${data.id}`);
-                window.location.replace(`/thankyou/${data.id}`)
+                window.location.replace(`${urlPrefix}/thankyou/${data.id}`)
             });
         }
         else if (res.status == 401) {
