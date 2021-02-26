@@ -16,10 +16,20 @@ const config = {
 
 const router = express.Router();
 
+if (config.server.secure) {
+  app.enable('trust proxy');
+  app.use(function(req, res, next) {
+    if (req.secure) {
+      return next();
+    }
+    res.redirect(`https://${req.headers.host}${req.url}`);
+  });
+}
+
 const subdomainForward = require('./server/subdomainForward.js');
 app.use(subdomainForward(config.server.subdomains, router));
 
-const pref = config.server.urlprefix.length ? `/${config.server.urlprefix}` : "";
+const pref = config.server.urlprefix ? `/${config.server.urlprefix}` : "";
 
 const getRouting = require('./server/routing_get.js')(router, config, logger);
 router.get(`${pref}/`, getRouting.root);

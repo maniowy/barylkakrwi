@@ -74,7 +74,8 @@ module.exports = function(router, config, logger) {
 
   module.connect = (req, res) => {
     const urlPrefix = config.server.urlprefix ? `/${config.server.urlprefix}` : "";
-    let url = WykopAPI.connectUrl(`https://${req.headers.host}${urlPrefix}/storeSession`);
+    const protocol = config.server.secure ? "https" : "http";
+    let url = WykopAPI.connectUrl(`${protocol}://${req.headers.host}${urlPrefix}/storeSession`);
     logger.debug("redirecting to: ", url);
     res.redirect(url);
   }
