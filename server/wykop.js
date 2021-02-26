@@ -234,7 +234,7 @@ class Wykop {
                 for (let e of data) {
                     // FIXME long dash
                     // FIXME digits?
-                    let countdown = e.body.match(/.*-.*=(.*)/)
+                    let countdown = e.body.match(/[1-9]+[0-9 ]*.*[-—+].*[1-9]+[0-9 ]*.*=.*?([1-9]+[0-9 ]*)/);
                     if (countdown && countdown.length > 1) {
                         if (currentVolume === null) {
                             currentVolume = parseInt(countdown[1].trim().replace(/\s/g, ''));
@@ -244,6 +244,11 @@ class Wykop {
                         }
                         if (currentVolume != null && lastUserDonationDate != null) {
                             break;
+                        }
+                    } else if (currentVolume === null) {
+                        countdown = e.body.toLowerCase().match(/.*?aktualny wynik[: a-z-]*([0-9 ]*)/);
+                        if (countdown && countdown.length > 1) {
+                            currentVolume = parseInt(countdown[1].trim().replace(/\s/g, ''));
                         }
                     }
                 }
