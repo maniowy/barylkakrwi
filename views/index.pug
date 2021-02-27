@@ -26,9 +26,10 @@ block content
                         i.fas.fa-upload
                       span.file-label
                     span.file-name  Wybierz zdjęcie
-                  label.is-small.file-option +18
-                    p.checkbox.ml-1
-                      input#adult(type='checkbox')
+                  label.is-small.file-option.va-top
+                    p.checkbox.va-top
+                      span.va-middle +18
+                      input.ml-1.va-middle#adult(type='checkbox')
               fieldset
                 legend
                   span Opcjonalne
@@ -53,8 +54,9 @@ block content
                   div#orders.field.is-grouped.is-grouped-multiline
                     each order in configData.orders
                       p.control
-                        label.checkbox.is-small #{order.name}
-                          input.ml-2(id=`order_${order.id}` type='checkbox')
+                        label.checkbox.is-small
+                          span.va-middle #{order.name}
+                          input.ml-2.va-middle(id=`order_${order.id}` type='checkbox')
                 div.field.label-on-border.mt-4.mb-1
                   label.on-border.is-small(for='message') Wiadomość
                   p.control

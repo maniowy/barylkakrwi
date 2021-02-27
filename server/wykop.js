@@ -231,8 +231,6 @@ class Wykop {
                     return;
                 }
                 for (let e of data) {
-                    // FIXME long dash
-                    // FIXME digits?
                     // FIXME unit tests
                     let countdown = e.body.match(/[0-9 ]*.*[-—+].*[0-9 ]*.*=.*?([0-9 ]*)/);
                     if (countdown && countdown.length > 1) {

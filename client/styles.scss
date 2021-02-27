@@ -41,33 +41,41 @@ $size-6: 0.75rem;
 //}
 
 .ml-auto {
-  margin-left: auto;
+  margin-left: auto !important;
 }
 
 .mr-auto {
-  margin-right: auto;
+  margin-right: auto !important;
 }
 
 .mx-auto {
-  margin-right: auto;
-  margin-left: auto;
+  margin-right: auto !important;
+  margin-left: auto !important;
 }
 
 .my-auto {
-  margin-top: auto;
-  margin-bottom: auto;
+  margin-top: auto !important;
+  margin-bottom: auto !important;
 }
 
 .mt-auto {
-  margin-top: auto;
+  margin-top: auto !important;
 }
 
 .mb-auto {
-  margin-bottom: auto;
+  margin-bottom: auto !important;
 }
 
 .w-auto {
-  width: auto;
+  width: auto !important;
+}
+
+.va-middle {
+  vertical-align: middle !important;
+}
+
+.va-top {
+  vertical-align: top !important;
 }
 
 .column {

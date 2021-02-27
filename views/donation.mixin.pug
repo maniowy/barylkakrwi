@@ -56,14 +56,16 @@ mixin donation(id, deletable)
                 option() #{city}
       div.field.is-grouped
         div.control.pb-3.pt-1
-          label.checkbox(for=`busdonation_${id}` title="Krwiobus") Krwiobus:
-            input.ml-1(id=`busdonation_${id}`
+          label.checkbox(for=`busdonation_${id}` title="Krwiobus")
+            span.va-middle Krwiobus:
+            input.ml-1.va-middle(id=`busdonation_${id}`
                   name=`busdonation`
                   type='checkbox'
                   onchange=`onBusDonationChange(${id})`)
         div.control.pb-3.pt-1
-          label.checkbox(for=`abroad_${id}` title="Oddział terenowy") OT:
-            input.ml-1(id=`abroad_${id}`
+          label.checkbox(for=`abroad_${id}` title="Oddział terenowy")
+            span.va-middle OT:
+            input.ml-1.va-middle(id=`abroad_${id}`
                  type='checkbox'
                  onchange=`onAbroadChange(${id});`)
         div.control.is-expanded.is-hidden
