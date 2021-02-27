@@ -39,7 +39,7 @@ async function updateProgressBar() {
     meter.classList.add("progress");
     meter.id = "progressBar";
     let text = document.getElementById("percentText");
-    retrieveCurrentVolumeAndRecentDate((volume, date) => {
+    retrieveCurrentVolume((volume) => {
         const full = configData.volume;
         meter.value = (full - volume)/full;
         spinner.replaceWith(meter);

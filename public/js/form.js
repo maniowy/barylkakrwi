@@ -1,12 +1,11 @@
-function retrieveCurrentVolumeAndRecentDate(onReady) {
+function retrieveCurrentVolume(onReady) {
   let XHR = new XMLHttpRequest();
   XHR.responseType="text";
   XHR.open('GET', `${urlPrefix}/latest`);
   XHR.onload = () => {
       const response = JSON.parse(XHR.response);
       const volume = response["volume"];
-      const date = response["date"];
-      onReady(volume, date);
+      onReady(volume);
   }
   XHR.send();
 }

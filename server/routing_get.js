@@ -56,7 +56,7 @@ module.exports = function(router, config, logger) {
   }
   module.latest = (req, res) => {
     const login = req.cookies.userData ? req.cookies.userData.login: null;
-    WykopAPI.retrieveCurrentVolumeAndRecentUserEntry(login, (volume, date) => { res.send(`{"volume":${volume},"date":"${date}"}`) });
+    WykopAPI.retrieveCurrentVolume(login, (volume) => { res.send(`{"volume":${volume}}`) });
   }
 
   module.thanks = (req, res) => {

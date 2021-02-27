@@ -221,10 +221,9 @@ class Wykop {
             .catch((err) => console.log(err));
     }
 
-    retrieveCurrentVolumeAndRecentUserEntry(user, onResult) {
+    retrieveCurrentVolume(user, onResult) {
         let retriever = (id) => {
             let currentVolume = null;
-            let lastUserDonationDate = null;
             this.retrievePage(id, (entries) => {
                 const data = entries.data;
                 if (!data) {
@@ -234,33 +233,33 @@ class Wykop {
                 for (let e of data) {
                     // FIXME long dash
                     // FIXME digits?
-                    let countdown = e.body.match(/[1-9]+[0-9 ]*.*[-—+].*[1-9]+[0-9 ]*.*=.*?([1-9]+[0-9 ]*)/);
+                    // FIXME unit tests
+                    let countdown = e.body.match(/[0-9 ]*.*[-—+].*[0-9 ]*.*=.*?([0-9 ]*)/);
                     if (countdown && countdown.length > 1) {
-                        if (currentVolume === null) {
-                            currentVolume = parseInt(countdown[1].trim().replace(/\s/g, ''));
-                        }
-                        if (e.author.login == user) {
-                            lastUserDonationDate = getDonationDate(e.body);
-                        }
-                        if (currentVolume != null && lastUserDonationDate != null) {
+                        const volume = parseInt(countdown[1].trim().replace(/\s/g, ''));
+                        if (!isNaN(volume)) {
+                            currentVolume = volume;
                             break;
                         }
-                    } else if (currentVolume === null) {
-                        countdown = e.body.toLowerCase().match(/.*?aktualny wynik[: a-z-]*([0-9 ]*)/);
-                        if (countdown && countdown.length > 1) {
-                            currentVolume = parseInt(countdown[1].trim().replace(/\s/g, ''));
+                    }
+                    countdown = e.body.toLowerCase().match(/.*?aktualny wynik[: a-z-]*([0-9 ]*)/);
+                    if (countdown && countdown.length > 1) {
+                        const volume = parseInt(countdown[1].trim().replace(/\s/g, ''));
+                        if (!isNaN(volume)) {
+                            currentVolume = volume;
+                            break;
                         }
                     }
                 }
                 if (currentVolume) {
-                    onResult(currentVolume, lastUserDonationDate);
+                    onResult(currentVolume);
                     return;
                 }
                 if (id < 10) {
                     retriever(id+1);
                 }
                 else {
-                    // failure
+                    console.error(`Failed to retrieve result, tried first ${id} pages`);
                 }
             });
         };

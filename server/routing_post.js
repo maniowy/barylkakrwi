@@ -171,7 +171,7 @@ module.exports = function(router, config, logger) {
     output += `\n[Regulamin](${addr}/regulamin) | [Wzór wpisu](https://www.wykop.pl/wpis/49653241) | [Strona akcji](${addr})`;
 
     const login = req.cookies.userData ? req.cookies.userData.login: null;
-    WykopAPI.retrieveCurrentVolumeAndRecentUserEntry(login, (volume, date) => {
+    WykopAPI.retrieveCurrentVolume(login, (volume) => {
       const volumes = donations.map(d => d.volume);
       if (volume < 0) {
         volume = config.data.volume;
