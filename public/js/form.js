@@ -22,7 +22,7 @@ function updateFilename() {
 }
 
 function scaleVolume(volume, kind) {
-  if (kind == "osocze") {
+  if (kind.match(/^osocze/)) {
     return Math.floor(volume/30)*10
   }
   return volume;
@@ -233,7 +233,7 @@ function onDonationKindChange(id) {
     let descriptionBox = volumeParent.children[1];
     descriptionBox.classList.remove("is-hidden");
     let desc = descriptionBox.firstElementChild.firstElementChild
-    if (kind.selectedIndex == 1) {
+    if (kind.selectedOptions[0].innerText.match(/^osocze/)) {
       desc.innerText = `= ${scaleVolume(parseInt(volume.value), "osocze")} ml KP`;
       desc.classList.remove("is-hidden");
       volume.parentElement.title = "Rzeczywista objętość oddanego osocza";

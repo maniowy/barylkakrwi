@@ -108,6 +108,10 @@ module.exports = function(router, config, logger) {
     return arr.join(sep);
   }
 
+  function shortPlasma(kind) {
+      return kind.match(/^osocze/) ? "osocze" : kind;
+  }
+
   function composeMessage(req, body, onReady) {
     let output = "";
     const donations = body.donations;
@@ -117,7 +121,7 @@ module.exports = function(router, config, logger) {
     const dateRegex = /(\d{4})-(\d{2})-(\d{2})/;
     output += donations.map(d => d.date.replace(dateRegex, '$3.$2.$1')).join(sep);
     output += "\nRodzaj donacji - ";
-    output += allOrOne(donations.map(d => d.kind), sep);
+    output += allOrOne(donations.map(d => shortPlasma(d.kind)), sep);
 
     const cities = allOrOne(donations.filter(d => d.city).map(d => {
       let out = "";
