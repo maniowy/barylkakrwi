@@ -54,7 +54,7 @@ function collectFormData() {
   });
   const group = document.getElementById("group")?.selectedOptions[0].innerText;
   const privateCounter = parseInt(document.getElementById("privateCounter")?.value);
-  const orders = Array.from(document.getElementById("orders")?.children).filter(c => c.firstElementChild?.firstElementChild.checked).map(l => l.innerText);
+  const orders = Array.from(document.getElementById("orders")?.children).filter(c => c.firstElementChild?.children[1].checked).map(l => l.firstElementChild.firstElementChild.innerText);
   const msg = document.getElementById("message")?.value;
   const adultmedia = document.getElementById("adult")?.checked;
   return {
