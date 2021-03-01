@@ -279,14 +279,12 @@ function onAbroadChange(id) {
   const city = document.getElementById(`abroad_city_${id}`);
   let bus = document.getElementById(`busdonation_${id}`);
   if (abroad.checked) {
-    //city.style.display = "inline-block";
-    city.parentElement.classList.remove("is-hidden");
+    city.disabled = false;
     city.focus();
     bus.checked = false;
   }
   else {
-    city.parentElement.classList.add("is-hidden");
-    //city.style.display = "none";
+    city.disabled = true;
   }
 }
 

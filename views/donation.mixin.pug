@@ -68,10 +68,11 @@ mixin donation(id, deletable)
             input.ml-1.va-middle(id=`abroad_${id}`
                  type='checkbox'
                  onchange=`onAbroadChange(${id});`)
-        div.control.is-expanded.is-hidden
+        div.control.is-expanded
           input.input.is-small.is-fullwidth(id=`abroad_city_${id}`
                 placeholder="Oddział terenowy"
-                name=`abroad_city`)
+                name=`abroad_city`
+                disabled)
     if deletable
       a.button.deleteButton.is-danger.is-small.mr-1.mb-1(
                onclick=`deleteDonation(${id});`
