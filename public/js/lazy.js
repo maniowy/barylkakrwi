@@ -42,6 +42,7 @@ async function updateProgressBar() {
     retrieveCurrentVolume((volume) => {
         const full = configData.volume;
         meter.value = (full - volume)/full;
+        meter.title = `${volume} / ${full} ml`;
         spinner.replaceWith(meter);
         text.innerText = ` ${Math.round((100*meter.value + Number.EPSILON)*100)/100}%`
     });
