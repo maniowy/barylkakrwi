@@ -54,7 +54,7 @@ block content
                   div#orders.field.is-grouped.is-grouped-multiline
                     each order in configData.orders
                       p.control
-                        label.checkbox.is-small
+                        label.checkbox.is-small(title=`${order.title}`)
                           span.va-middle #{order.name}
                           input.ml-1.va-middle(id=`order_${order.id}` type='checkbox')
                 div.field.label-on-border.mt-4.mb-1

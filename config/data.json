@@ -72,10 +72,11 @@
     {"id":"other", "name":"inna"}
   ],
   "orders": [
-    {"id":"zhdkiii", "name":"ZHDK III"},
-    {"id":"zhdkii", "name":"ZHDK II"},
-    {"id":"zhdki", "name":"ZHDK I"},
-    {"id":"zdzn", "name":"ZHDK ZDZN"},
-    {"id":"dp", "name":"Dawca Przeszczepu"}
+    {"id":"zhdkiii", "name":"ZHDK III", "title": "Zasłużony Honorowy Dawca Krwi III stopnia. Odznaczenie przyznawane po oddaniu min. 5 litrów krwi pełnej przez kobiety i min. 6 litrów przez mężczyzn"},
+    {"id":"zhdkii", "name":"ZHDK II", "title": "Zasłużony Honorowy Dawca Krwi II stopnia. Odznaczenie przyznawane po oddaniu min. 10 litrów krwi pełnej przez kobiety i min. 12 litrów przez mężczyzn"},
+    {"id":"zhdki", "name":"ZHDK I", "title": "Zasłużony Honorowy Dawca Krwi I stopnia. Odznaczenie przyznawane po oddaniu min. 15 litrów krwi pełnej przez kobiety i min. 18 litrów przez mężczyzn"},
+    {"id":"zdzn", "name":"ZHDK ZDZN", "title": "Zasłużony Honorowy Dawca Krwi: Zasłużony Dla Zdrowia Narodu. Odznaczenie przyznawane po oddaniu min. 20 litrów krwi"},
+    {"id":"dp", "name":"Dawca Przeszczepu", "title": "Odznaczenie przyznawane osobom, które jednorazowo oddały szpik lub inne regenerujące się komórki i tkanki"},
+    {"id":"zdp", "name":"Zasłużony Dawca Przeszczepu", "title": "Odznaczenie przyznawane osobom, które co najmniej dwa razy oddały szpik lub inne regenerujące się komórki i tkanki"}
   ]
 }
