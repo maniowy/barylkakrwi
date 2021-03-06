@@ -108,6 +108,14 @@ module.exports = function(router, config, logger) {
       else {
         res.sendStatus(sts);
       }
+    }, err => {
+      if (err.code && err.message_pl) {
+        res.status(err.code).send(err.message_pl);
+      } else if (err.code && err.message_en) {
+        res.status(err.code).send(err.message_en);
+      } else {
+        res.status(500).send("Przepraszamy, wystąpił nieokreślony błąd.\nSkontaktuj się z @wuochu lub innymi opiekunami tagu.");
+      }
     });
   }
 

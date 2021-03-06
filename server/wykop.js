@@ -96,7 +96,7 @@ class Wykop {
         return `https://www.wykop.pl/wpis/${id}`;
     }
 
-    login(login, accountKey, callback) {
+    login(login, accountKey, onSuccess, onError) {
         const url = this.createUrl({
             urlParams: this.urlParams.login
         });
@@ -114,8 +114,11 @@ class Wykop {
             'Content-Type': 'application/x-www-form-urlencoded'
         }, this.logger).then((res) => {
             this.logger.info("Received response: ", res);
-            callback(200, res);
-        }).catch((err) => this.logger.error("Failure: ", err));
+            onSuccess(200, res);
+        }).catch((err) => {
+            this.logger.error("Failure: ", err);
+            onError(err);
+        });
     }
 
     sign(url, post) {
@@ -135,7 +138,7 @@ class Wykop {
                 postString = Object.keys(post).map(key => post[key]).join();
             }
         }
-        let value = `${this.secret}${url}${postString}`;
+        const value = `${this.secret}${url}${postString}`;
         this.logger.trace(`signing: ${value.slice(0,150)}`);
         return md5(value);
         //return md5(decodeURI(value));
@@ -195,7 +198,7 @@ class Wykop {
         retriever(1);
     }
 
-    async addEntry(request, file, onResult) {
+    async addEntry(request, file, onResult, onError) {
         this.logger.debug(`addEntry request: `, request);
         const url = this.createUrl({
             urlParams: this.urlParams.addEntry
@@ -244,7 +247,10 @@ class Wykop {
             this.logger).then((res) => {
               this.logger.info("Received response: ", res);
               onResult(res);
-        }).catch((err) => this.logger.error("Failure: ", err));
+        }).catch((err) => {
+            this.logger.error("Failure: ", err);
+            onError(err);
+        });
     }
 }
 

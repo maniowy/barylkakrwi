@@ -103,7 +103,7 @@ function submitForm() {
         else if (res.status == 401) {
             console.error("unauthorized");
             res.text().then(txt => console.error(txt));
-        } else if (res.status == 400) {
+        } else if (res.status >= 400) {
             res.text().then(txt => {
                 console.error(txt);
                 popupError(txt);
@@ -144,7 +144,7 @@ function requestPreview(onReady, onError) {
             console.error("unauthorized");
             res.text().then(txt => console.error(txt));
             onError();
-        } else if (res.status == 400) {
+        } else if (res.status >= 400) {
             res.text().then(txt => {
                 console.error(txt);
                 popupError(txt);

@@ -215,6 +215,8 @@ module.exports = function(router, config, logger) {
           logger.debug("Received response from wykop: ", wykopResponse);
           logger.trace("Entry url: ", WykopAPI.entryUrl(wykopResponse.data.id));
           resolver(wykopResponse.data.id);
+        }, error => {
+          rejector(error);
         });
       });
     });
@@ -222,7 +224,15 @@ module.exports = function(router, config, logger) {
       .catch(err => {
         logger.error(`Validation error: ${err.code} ${err.message}`);
         //res.set('Content-Type', 'text/plain');
-        res.status(err.code).send(err.message);
+        if (err.code && err.message) {
+          res.status(err.code).send(err.message);
+        } else if (err.code && err.message_pl) {
+          res.status(err.code).send(err.message_pl);
+        } else if (err.code && err.message_en) {
+          res.status(err.code).send(err.message_en);
+        } else {
+          res.status(500).send("Przepraszamy, wystąpił nieokreślony błąd.\nSkontaktuj się z @wuochu lub innymi opiekunami tagu.");
+        }
       });
   }
 
