@@ -48,7 +48,7 @@ module.exports = function(router, config, logger) {
     res.render('donation', { id: req.params.id, configData: config.data});
   }
 
-  const WykopAPI = require('./wykop.js');
+  const WykopAPI = require('./wykop.js')(logger);
   WykopAPI.provideSecrets(config.confidential);
 
   module.page = (req, res) => {

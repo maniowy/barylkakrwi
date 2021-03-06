@@ -6,54 +6,18 @@ const qs = require('qs');
 const FormData = require('form-data');
 const fs = require('fs');
 
-function post(url, data, header, callback) {
-    console.log(`post: ${url} ${data} `, JSON.stringify(header));
-
-    const options = {
-        method: 'POST',
-        headers: header
-    };
-    console.log(`options: `, options);
-
-    const req = http.request(url, options, (res) => {
-        console.log("Login response status: ", res.statusCode);
-        console.log("Headers: ", JSON.stringify(res.headers));
-
-        let output = '';
-
-        res.on('data', (chunk) => {
-            output += chunk;
-        });
-
-        res.on('end', () => {
-            callback(res.statusCode, output);
-        });
-    });
-
-    //Object.keys(header).forEach(key => req.setHeader(key, header[key]));
-    //Object.keys(header).forEach(key => console.log(`Header ${key}: `, req.getHeader(key)));
-
-    req.on('error', (e) => {
-        console.error(`problem with request: ${e.message}`);
-    });
-
-    //console.log("Request: ", req);
-    req.write(data);
-    req.end();
-}
-
-function postAxios(url, data, header) {
+function postAxios(url, data, header, logger) {
     const dataStr = (typeof data == 'string' ? data : JSON.stringify(data));
-    console.log(`postAxios: ${url} ${dataStr.slice(0,300)} ${header?JSON.stringify(header).slice(0,300):""}`);
+    logger.debug(`postAxios: ${url} ${dataStr.slice(0,300)} ${header?JSON.stringify(header).slice(0,300):""}`);
     if (data && typeof data != 'string') {
-        console.log(`post params: ${[...Object.keys(data)]}`);
+        logger.debug(`post params: ${[...Object.keys(data)]}`);
     }
 
     const options = {
         method: 'POST',
         headers: header
     };
-    console.log(`options: `, options);
+    logger.trace(`options: `, options);
 
     return new Promise((resolve, reject) => {
         axios.post(url, data, {headers: header})
@@ -76,41 +40,8 @@ function postAxios(url, data, header) {
     });
 }
 
-function getDonationDate(text) {
-    let donationDate=text.match(/\d{1,2}\.\d{2}\.\d{4}/)
-    if (!donationDate || donationDate.length < 1) {
-        donationDate=text.match(/\d{1,2}\/\d{2}\/\d{4}/)
-    }
-    if (!donationDate || donationDate.length < 1) {
-        donationDate=text.match(/\d{1,2}\/\d{2}\/\d{2}/)
-    }
-    if (!donationDate || donationDate.length < 1) {
-        donationDate=text.match(/\d{1,2}\/\d{2}/)
-    }
-    if (!donationDate || donationDate.length < 1) {
-        var today=text.match(/([Dd]ziś|[Dd]zisiaj)/)
-        if (today && today.length > 1) {
-            var now = new Date()
-            var month = now.getMonth()
-            if (month < 10) {
-                month = "0" + month
-            }
-            var nowStr = now.getDay() + "/" + month + "/" + now.getFullYear()
-            donationDate = nowStr.match(/\d{1,2}\/\d{2}\/\d{4}/)
-        }
-    }
-    if (donationDate && donationDate.length > 0) {
-        donationDate[0]=donationDate[0].replace(/\//g, ".")
-    }
-
-    if (donationDate && donationDate.length > 0) {
-        return donationDate[0];
-    }
-    return null;
-}
-
 class Wykop {
-    constructor() {
+    constructor(logger) {
         this.baseUrl = "https://a2.wykop.pl";
         this.queries = {
             connect: "/login/connect",
@@ -126,7 +57,7 @@ class Wykop {
             addEntry: ["Entries", "Add"],
             tags: ["Tags"]
         }
-
+        this.logger = logger;
     }
     provideSecrets(confidential) {
         this.appKey = confidential.appkey;
@@ -171,24 +102,24 @@ class Wykop {
         });
 
         const data = {login: login, accountkey: accountKey};
-        console.log("login data: ", data);
+        this.logger.info("login data: ", data);
 
         //const dataStr = querystring.stringify(data);
         const dataStr = qs.stringify(data);
         const apisign = this.sign(url, data);
-        console.log(`apisign: ${apisign}`);
+        this.logger.trace(`apisign: ${apisign}`);
 
         postAxios(url, dataStr, {
             apisign: apisign,
             'Content-Type': 'application/x-www-form-urlencoded'
-        }).then((res) => {
-            console.log("Received response: ", res);
+        }, this.logger).then((res) => {
+            this.logger.info("Received response: ", res);
             callback(200, res);
-        }).catch((err) => console.error("Failure: ", err));
+        }).catch((err) => this.logger.error("Failure: ", err));
     }
 
     sign(url, post) {
-        console.log(`sign: ${url}`, (post ? JSON.stringify(post).slice(0,150) : ""));
+        this.logger.log(`sign: ${url}`, (post ? JSON.stringify(post).slice(0,150) : ""));
         let postString = ''
         if (post) {
             if (Array.isArray(post)) {
@@ -205,7 +136,7 @@ class Wykop {
             }
         }
         let value = `${this.secret}${url}${postString}`;
-        console.log(`signing: ${value.slice(0,150)}`);
+        this.logger.trace(`signing: ${value.slice(0,150)}`);
         return md5(value);
         //return md5(decodeURI(value));
     }
@@ -218,7 +149,7 @@ class Wykop {
         const url = this.getPageRequestUrl(id);
         axios.get(url, {headers: {apisign: this.sign(url)}})
             .then(res => onResult(res.data))
-            .catch((err) => console.log(err));
+            .catch((err) => this.logger.error(err));
     }
 
     retrieveCurrentVolume(user, onResult) {
@@ -227,7 +158,7 @@ class Wykop {
             this.retrievePage(id, (entries) => {
                 const data = entries.data;
                 if (!data) {
-                    console.log("Failed to retrieve page");
+                    this.logger.error("Failed to retrieve page");
                     return;
                 }
                 for (let e of data) {
@@ -257,7 +188,7 @@ class Wykop {
                     retriever(id+1);
                 }
                 else {
-                    console.error(`Failed to retrieve result, tried first ${id} pages`);
+                    this.logger.error(`Failed to retrieve result, tried first ${id} pages`);
                 }
             });
         };
@@ -265,15 +196,15 @@ class Wykop {
     }
 
     async addEntry(request, file, onResult) {
-        console.debug(`addEntry request: `, request);
+        this.logger.debug(`addEntry request: `, request);
         const url = this.createUrl({
             urlParams: this.urlParams.addEntry
         });
-        console.log("add entry url: ", url);
+        this.logger.trace("add entry url: ", url);
 
         const data = request;
         const apisign = this.sign(url, data);
-        console.log(`apisign: ${apisign}`);
+        this.logger.trace(`apisign: ${apisign}`);
 
         const dataStr = qs.stringify(data);
         const fd = new FormData();
@@ -284,7 +215,7 @@ class Wykop {
             }
             fd.append('embed', fs.createReadStream(file.embed.path));
         } else {
-            console.log("add entry data:", dataStr.slice(0,300));
+            this.logger.trace("add entry data:", dataStr.slice(0,300));
         }
 
         const contentType = ((file && file.embed)
@@ -307,14 +238,17 @@ class Wykop {
             await promise;
         }
 
-        postAxios(url, (file&&file.embed ? fd : dataStr), options).then((res) => {
-            console.log("Received response: ", res);
-            onResult(res);
-        }).catch((err) => console.error("Failure: ", err));
+        postAxios(url,
+            (file&&file.embed ? fd : dataStr),
+            options,
+            this.logger).then((res) => {
+              this.logger.info("Received response: ", res);
+              onResult(res);
+        }).catch((err) => this.logger.error("Failure: ", err));
     }
 }
 
-module.exports = (function() {
-    return new Wykop();
-}());
+module.exports = function(logger) {
+    return new Wykop(logger);
+};
 // module.exports = Wykop

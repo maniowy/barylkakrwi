@@ -1,7 +1,7 @@
 module.exports = function(router, config, logger) {
   let module = {}
 
-  const WykopAPI = require('./wykop.js');
+  const WykopAPI = require('./wykop.js')(logger);
   WykopAPI.provideSecrets(config.confidential);
 
   // multi-part forms
@@ -203,7 +203,7 @@ module.exports = function(router, config, logger) {
         next(err);
         return;
       }
-      logger.trace(`addEntry request: `, fields);
+      logger.info(`addEntry request: `, fields);
       const body = JSON.parse(fields.body)
       if (!validate(body, files, error => rejector({code: 400, message: error}))) {
         return;
