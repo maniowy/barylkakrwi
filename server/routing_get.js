@@ -22,11 +22,11 @@ module.exports = function(router, config, logger) {
       logger.debug('Signed cookies: ', req.signedCookies);
     }
 
+    const urlPrefix = config.server.urlprefix ? `/${config.server.urlprefix}` :"";
     let userData = req.cookies.userData;
     if (userData == undefined) {
       logger.debug("userData cookie not set");
-      const prefix = config.server.urlprefix ? `/${config.server.urlprefix}` :"";
-      res.redirect(`${prefix}/connect`);
+      res.redirect(`${urlPrefix}/connect`);
       return
     }
     else {
@@ -38,7 +38,7 @@ module.exports = function(router, config, logger) {
       basedir: 'public',
       configData: config.data,
       appPrefix: config.server.appprefix,
-      urlPrefix: config.server.urlprefix,
+      urlPrefix: urlPrefix,
       user: userData.login
     });
   };
@@ -61,11 +61,12 @@ module.exports = function(router, config, logger) {
 
   module.thanks = (req, res) => {
     const userData = req.cookies.userData;
+    const urlPrefix = config.server.urlprefix ? `/${config.server.urlprefix}` :"";
     res.render('thankyou', {
       basedir: 'public',
       configData: config.data,
       appPrefix: config.server.appprefix,
-      urlPrefix: config.server.urlprefix,
+      urlPrefix: urlPrefix,
       id: req.params.id,
       title: 'Baryłka krwi',
       user: userData.login
