@@ -10,6 +10,7 @@
     "js-build": "babel _javascript --out-dir lib",
     "js-watch": "npm run js-build -- --watch",
     "deploy": "npm run css-deploy && npm run js-build",
+    "test": "mocha",
     "start": "DEBUG=*:* npx nodemon server.js"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "formdata-node": "^2.4.0",
     "formidable": "^1.2.2",
     "md5": "^2.0.0",
+    "mocha": "^8.3.1",
     "node-sass": "^4.14.1",
     "postcss-discard-empty": "^4.0.1",
     "pug": "^2.0.3",

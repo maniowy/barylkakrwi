@@ -155,6 +155,24 @@ class Wykop {
             .catch((err) => this.logger.error(err));
     }
 
+    testForCurrentVolume(body) {
+        let countdown = body.match(/[0-9 ]*.*[-—+].*[0-9 ]*.*=(.*)/);
+        if (countdown && countdown.length > 1) {
+            const volume = parseInt(countdown[1].trim().replace(/\s/g, ''));
+            if (!isNaN(volume)) {
+                return volume;
+            }
+        }
+        countdown = body.toLowerCase().match(/.*?aktualny wynik[: a-z-]*([0-9 ]*)/);
+        if (countdown && countdown.length > 1) {
+            const volume = parseInt(countdown[1].trim().replace(/\s/g, ''));
+            if (!isNaN(volume)) {
+                return volume;
+            }
+        }
+        return Number.NaN;
+    }
+
     retrieveCurrentVolume(user, onResult) {
         let retriever = (id) => {
             let currentVolume = null;
@@ -165,22 +183,10 @@ class Wykop {
                     return;
                 }
                 for (let e of data) {
-                    // FIXME unit tests
-                    let countdown = e.body.match(/[0-9 ]*.*[-—+].*[0-9 ]*.*=.*?([0-9 ]*)/);
-                    if (countdown && countdown.length > 1) {
-                        const volume = parseInt(countdown[1].trim().replace(/\s/g, ''));
-                        if (!isNaN(volume)) {
-                            currentVolume = volume;
-                            break;
-                        }
-                    }
-                    countdown = e.body.toLowerCase().match(/.*?aktualny wynik[: a-z-]*([0-9 ]*)/);
-                    if (countdown && countdown.length > 1) {
-                        const volume = parseInt(countdown[1].trim().replace(/\s/g, ''));
-                        if (!isNaN(volume)) {
-                            currentVolume = volume;
-                            break;
-                        }
+                    const volume = this.testForCurrentVolume(e.body);
+                    if (!isNaN(volume)) {
+                        currentVolume = volume;
+                        break;
                     }
                 }
                 if (currentVolume) {
