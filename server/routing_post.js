@@ -4,6 +4,8 @@ module.exports = function(router, config, logger) {
   const WykopAPI = require('./wykop.js')(logger);
   WykopAPI.provideSecrets(config.confidential);
 
+  const barylka = require('./barylka.js')(config, logger);
+
   // multi-part forms
   const formidable = require('formidable');
 
@@ -173,11 +175,8 @@ module.exports = function(router, config, logger) {
     const login = req.cookies.userData ? req.cookies.userData.login: null;
     WykopAPI.retrieveCurrentVolume(login, (volume) => {
       const volumes = donations.map(d => d.volume);
-      if (volume < 0) {
-        volume = config.data.volume;
-      }
-      const newVolume = volume - volumes.reduce((acc, cur) => acc + cur, 0);
-      output = `${volume} - ${volumes.join(" - ")} = ${newVolume}\n${output}`;
+      const equation = barylka.composeEquation(volume, volumes);
+      output = `${equation}\n${output}`;
       onReady(output);
     });
   }
