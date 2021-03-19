@@ -1,7 +1,8 @@
 const assert = require('assert');
 
+const config = {data:require('../config/data.json'), confidential:require('../config/confidential.json')};
 const logger = require('simple-node-logger').createSimpleLogger();
-const WykopApi = require('../server/wykop.js')(logger);
+const barylka = require('../server/barylka.js')(config, logger);
 
 describe('Wykop', function() {
   describe('testForCurrentVolume', function() {
@@ -23,7 +24,7 @@ describe('Wykop', function() {
         [' 305120  -  500  =  304620 ', 304620]
       ];
       for (i of input) {
-        assert.equal(WykopApi.testForCurrentVolume(i[0]), i[1]);
+        assert.equal(barylka.testForCurrentVolume(i[0]), i[1]);
       }
     });
     it('should parse input with spaces', function() {
@@ -41,7 +42,7 @@ describe('Wykop', function() {
         ['317 990 - 450 =317 540', 317540],
       ];
       for (i of input) {
-        assert.equal(WykopApi.testForCurrentVolume(i[0]), i[1]);
+        assert.equal(barylka.testForCurrentVolume(i[0]), i[1]);
       }
     });
     it('should accept input with long dash (ascii 8212)', function() {
@@ -49,7 +50,7 @@ describe('Wykop', function() {
         ['318 650 — 650 = 318 000', 318000]
       ];
       for (i of input) {
-        assert.equal(WykopApi.testForCurrentVolume(i[0]), i[1]);
+        assert.equal(barylka.testForCurrentVolume(i[0]), i[1]);
       }
     });
     it('should accept corrections', function() {
@@ -59,7 +60,7 @@ describe('Wykop', function() {
         ['Korekta. Aktualny wynik: 325100', 325100]
       ];
       for (i of input) {
-        assert.equal(WykopApi.testForCurrentVolume(i[0]), i[1]);
+        assert.equal(barylka.testForCurrentVolume(i[0]), i[1]);
       }
     });
     it('should accept negative result', function() {
@@ -67,7 +68,7 @@ describe('Wykop', function() {
         ['1020 - 650 - 650 - 650 = -930', -930]
       ];
       for (i of input) {
-        assert.equal(WykopApi.testForCurrentVolume(i[0]), i[1]);
+        assert.equal(barylka.testForCurrentVolume(i[0]), i[1]);
       }
     });
   });

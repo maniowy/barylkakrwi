@@ -50,13 +50,14 @@ module.exports = function(router, config, logger) {
 
   const WykopAPI = require('./wykop.js')(logger);
   WykopAPI.provideSecrets(config.confidential);
+  const barylka = require('./barylka.js')(config, logger);
 
   module.page = (req, res) => {
-    WykopAPI.retrievePage(req.params.id, (entries) => { res.send(entries) });
+    barylka.retrievePage(req.params.id, (entries) => { res.send(entries) });
   }
   module.latest = (req, res) => {
     const login = req.cookies.userData ? req.cookies.userData.login: null;
-    WykopAPI.retrieveCurrentVolume(login, (volume) => { res.send(`{"volume":${volume}}`) });
+    barylka.retrieveCurrentVolume(login, (volume) => { res.send(`{"volume":${volume}}`) });
   }
 
   module.thanks = (req, res) => {

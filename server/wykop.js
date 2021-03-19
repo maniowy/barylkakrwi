@@ -1,6 +1,5 @@
 const http = require('https');
 const md5 = require('md5');
-//const querystring = require('querystring');
 const axios = require('axios');
 const qs = require('qs');
 const FormData = require('form-data');
@@ -43,19 +42,13 @@ function postAxios(url, data, header, logger) {
 class Wykop {
     constructor(logger) {
         this.baseUrl = "https://a2.wykop.pl";
-        this.queries = {
-            connect: "/login/connect",
-            login: "/Login/Index",
-            tags: "/Tags/Entries/barylkakrwi",
-            appKey: "/appkey/",
-            userKey: "/userkey/",
-            clearOutput: "/output/clear"
-        }
         this.urlParams = {
             connect: ["login", "connect"],
             login: ["Login", "Index"],
             addEntry: ["Entries", "Add"],
-            tags: ["Tags"]
+            tags: ["Tags"],
+            appKey: ["appkey"],
+            userKey: ["userkey"]
         }
         this.logger = logger;
     }
@@ -76,9 +69,9 @@ class Wykop {
         }
         let ukey = "";
         if (this.userKey) {
-            ukey = `${this.queries.userKey}${this.userKey}`;
+            ukey = `/${this.urlParams.userKey.join()}/${this.userKey}`;
         }
-        return `${baseUrl}${apiParamsJoined}${namedParamsJoined}${this.queries.appKey}${this.appKey}${ukey}`;
+        return `${baseUrl}${apiParamsJoined}${namedParamsJoined}/${this.urlParams.appKey.join()}/${this.appKey}${ukey}`;
     }
 
     createUrl(options) {
@@ -88,7 +81,6 @@ class Wykop {
     connectUrl(redirect) {
         const b64 = Buffer.from(redirect).toString('base64');
         const encoded = encodeURI(b64);
-        //let url = `${this.baseUrl}${this.queries.connect}${this.queries.appKey}${this.appKey}/redirect/${encoded}/secure/${this.sign(redirect)}`;
         return this.createUrl({urlParams: this.urlParams.connect, namedParams: {redirect:encoded, secure: this.sign(redirect)}});
     }
 
@@ -141,67 +133,17 @@ class Wykop {
         const value = `${this.secret}${url}${postString}`;
         this.logger.trace(`signing: ${value.slice(0,150)}`);
         return md5(value);
-        //return md5(decodeURI(value));
     }
 
-    getPageRequestUrl(id) {
-        return this.createUrl({urlParams: this.urlParams.tags, namedParams: {Entries: 'barylkakrwi', page: id, output: 'clear'}});
+    getPageRequestUrl(tagName, pageId) {
+        return this.createUrl({urlParams: this.urlParams.tags, namedParams: {Entries: tagName, page: pageId, output: 'clear'}});
     }
 
-    retrievePage(id, onResult) {
-        const url = this.getPageRequestUrl(id);
+    retrievePage(tagName, id, onResult) {
+        const url = this.getPageRequestUrl(tagName, id);
         axios.get(url, {headers: {apisign: this.sign(url)}})
             .then(res => onResult(res.data))
             .catch((err) => this.logger.error(err));
-    }
-
-    testForCurrentVolume(body) {
-        let countdown = body.match(/[0-9 ]*.*[-—+].*[0-9 ]*.*=(.*)/);
-        if (countdown && countdown.length > 1) {
-            const volume = parseInt(countdown[1].trim().replace(/\s/g, ''));
-            if (!isNaN(volume)) {
-                return volume;
-            }
-        }
-        countdown = body.toLowerCase().match(/.*?aktualny wynik[: a-z-]*([0-9 ]*)/);
-        if (countdown && countdown.length > 1) {
-            const volume = parseInt(countdown[1].trim().replace(/\s/g, ''));
-            if (!isNaN(volume)) {
-                return volume;
-            }
-        }
-        return Number.NaN;
-    }
-
-    retrieveCurrentVolume(user, onResult) {
-        let retriever = (id) => {
-            let currentVolume = null;
-            this.retrievePage(id, (entries) => {
-                const data = entries.data;
-                if (!data) {
-                    this.logger.error("Failed to retrieve page");
-                    return;
-                }
-                for (let e of data) {
-                    const volume = this.testForCurrentVolume(e.body);
-                    if (!isNaN(volume)) {
-                        currentVolume = volume;
-                        break;
-                    }
-                }
-                if (currentVolume) {
-                    onResult(currentVolume);
-                    return;
-                }
-                if (id < 10) {
-                    retriever(id+1);
-                }
-                else {
-                    this.logger.error(`Failed to retrieve result, tried first ${id} pages`);
-                }
-            });
-        };
-        retriever(1);
     }
 
     async addEntry(request, file, onResult, onError) {
@@ -263,4 +205,3 @@ class Wykop {
 module.exports = function(logger) {
     return new Wykop(logger);
 };
-// module.exports = Wykop

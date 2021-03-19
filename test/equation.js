@@ -1,5 +1,5 @@
 const assert = require('assert');
-const config = {data:require('../config/data.json')};
+const config = {data:require('../config/data.json'), confidential:require('../config/confidential.json')};
 const logger = require('simple-node-logger').createSimpleLogger();
 const barylka = require('../server/barylka.js')(config, logger);
 
