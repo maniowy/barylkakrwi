@@ -115,7 +115,8 @@ module.exports = function(router, config, logger) {
       } else if (err.code && err.message_en) {
         res.status(err.code).send(err.message_en);
       } else {
-        res.status(500).send("Przepraszamy, wystąpił nieokreślony błąd.\nSkontaktuj się z @wuochu lub innymi opiekunami tagu.");
+        const protectors = config.serverData.protectors.map(p => `@${p}`).join(", ")
+        res.status(500).send(`Przepraszamy, wystąpił nieokreślony błąd.\nSkontaktuj się z ${protectors} lub innymi opiekunami tagu.`);
       }
     });
   }

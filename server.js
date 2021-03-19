@@ -11,7 +11,8 @@ app.use(express.static(__dirname + '/public'));
 const config = {
   data: require('./config/data.json'),
   confidential: require('./config/confidential.json'),
-  server: require('./config/server.json')
+  server: require('./config/server.json'),
+  serverData: require('./config/server_data.json')
 }
 
 const router = express.Router();
