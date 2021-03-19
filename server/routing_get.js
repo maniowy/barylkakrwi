@@ -1,18 +1,10 @@
 module.exports = function(router, config, logger) {
   let module = {}
 
-  function internetExplorer(req) {
-    const userAgent = req.headers['user-agent'];
-    logger.debug(`User agent: ${userAgent}`);
-    return userAgent.indexOf("MSIE ") > 0 || !!userAgent.match(/Trident.*rv\:11\./);
-  }
+  const browserCompatible = require('./compatibility.js');
 
   module.root = (req, res) => {
-    if (internetExplorer(req)) {
-      res.render('not-supported', {
-        title: 'Baryłka krwi',
-        basedir: 'public'
-      });
+    if (!browserCompatible(req, res, logger)) {
       return;
     }
     if (req.cookies) {
