@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const logger = require('./server/logger.js')();
 const app = express();
+require('pug')
 
 // generating html with pug
 app.set('view engine', 'pug');
