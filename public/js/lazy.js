@@ -37,6 +37,7 @@ async function updateProgressBar() {
     let spinner = document.getElementById("progressBarSpinner");
     let meter = document.createElement("progress");
     meter.classList.add("progress");
+    meter.classList.add("is-danger");
     meter.id = "progressBar";
     let text = document.getElementById("percentText");
     retrieveCurrentVolume((volume) => {
@@ -44,6 +45,7 @@ async function updateProgressBar() {
         meter.value = (full - volume)/full;
         meter.title = `${full - volume} / ${full} ml\nPozostało ${volume} ml`;
         spinner.replaceWith(meter);
+        meter.parentElement.classList.add("progressBarContainer");
         text.innerText = ` ${Math.round((100*meter.value + Number.EPSILON)*100)/100}%`
     });
 }

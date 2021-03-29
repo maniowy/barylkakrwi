@@ -25,6 +25,7 @@ $size-6: 0.75rem;
 @import "../node_modules/bulma/sass/elements/container";
 @import "../node_modules/bulma/sass/elements/icon";
 @import "../node_modules/bulma/sass/elements/other";
+@import "../node_modules/bulma/sass/elements/progress";
 @import "../node_modules/bulma/sass/elements/title";
 @import "../node_modules/bulma/sass/components/level";
 @import "../node_modules/bulma/sass/components/message";
@@ -166,4 +167,14 @@ label.is-small {
 
 #errorModalContent, #descriptionModalContent {
   width: auto;
+}
+
+.progress {
+  width: 20vw;
+  margin: 0.1rem;
+}
+
+.progressBarContainer {
+  background-color: $progress-bar-background-color;
+  border-radius: $progress-bar-radius;
 }
