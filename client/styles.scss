@@ -181,3 +181,13 @@ label.is-small {
   background-color: $progress-bar-background-color;
   border-radius: $progress-border-radius;
 }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
