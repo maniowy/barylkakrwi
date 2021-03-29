@@ -3,7 +3,7 @@ const config = {data:require('../config/data.json'), confidential:require('../co
 const logger = require('simple-node-logger').createSimpleLogger();
 const barylka = require('../server/barylka.js')(config, logger);
 
-describe('Equation', function() {
+describe('EquationComposer', function() {
   it('should delimit thousands', function() {
     const input = {last: 137450, volumes:[450, 1000]};
     assert.equal(barylka.composeEquation(input.last, input.volumes),

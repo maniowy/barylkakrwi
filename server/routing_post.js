@@ -103,84 +103,6 @@ module.exports = function(router, config, logger) {
     return validateInputBody(body);
   }
 
-  function allOrOne(arr, sep) {
-    if (new Set(arr).size == 1) {
-      return arr[0];
-    }
-    return arr.join(sep);
-  }
-
-  function shortPlasma(kind) {
-      return kind.match(/^osocze/) ? "osocze" : kind;
-  }
-
-  function composeMessage(req, body, onReady) {
-    let output = "";
-    const donations = body.donations;
-    const sep = ", ";
-
-    output += "Data donacji - ";
-    const dateRegex = /(\d{4})-(\d{2})-(\d{2})/;
-    output += donations.map(d => d.date.replace(dateRegex, '$3.$2.$1')).join(sep);
-    output += "\nRodzaj donacji - ";
-    output += allOrOne(donations.map(d => shortPlasma(d.kind)), sep);
-
-    const cities = allOrOne(donations.filter(d => d.city).map(d => {
-      let out = "";
-      if (d.site != config.data.sites[config.data.sites.length - 1].name) {
-        out += `${d.site} `;
-      }
-      out += d.city
-      if (d.abroad && d.abroadCity.length) {
-        out += ` OT ${d.abroadCity}`;
-      } else if (d.bus) {
-        // TODO optional busCity?
-        out += " (donacja w krwiobusie)";
-      }
-      return out;
-    }), sep);
-
-    if (cities.length) {
-      output += `\nMiejsce donacji - ${cities}`;
-    }
-
-    if (body.group) {
-      output += `\nGrupa krwi - ${body.group}`;
-    }
-
-    if (Number.isInteger(body.privateCounter)) {
-      output += `\nPrywatny licznik - ${body.privateCounter} ml`;
-    }
-
-    if (body.orders.length) {
-      output += `\nPrzyznane odznaczenia - ${body.orders.join(sep)}`;
-    }
-
-    if (body.msg) {
-      output += `\n\n${body.msg.trim()}`;
-    }
-
-    const missingTags = config.data.tags.filter(tag => {
-      return output.match(new RegExp("(?:^|\\s+|\\.|,|;)" + tag + "(?:\\s+|\\.|,|;|-|$)")) == null
-    });
-    if (missingTags.length) {
-      output += `\n${missingTags.join(" ")}`;
-    }
-
-    const addr = "https://barylkakrwi.org";
-
-    output += `\n\nWpis został dodany za pomocą [tego skryptu](${addr}/skrypt).`;
-    output += `\n[Regulamin](${addr}/regulamin) | [Wzór wpisu](https://www.wykop.pl/wpis/49653241) | [Strona akcji](${addr})`;
-
-    const login = req.cookies.userData ? req.cookies.userData.login: null;
-    barylka.retrieveCurrentVolume(login, (volume) => {
-      const volumes = donations.map(d => d.volume);
-      const equation = barylka.composeEquation(volume, volumes);
-      output = `${equation}\n${output}`;
-      onReady(output);
-    });
-  }
-
   module.addEntry = (req, res) => {
     logger.trace("Received multi-part addEntry request");
     if (!req.cookies) {
@@ -207,9 +129,8 @@ module.exports = function(router, config, logger) {
       if (!validate(body, files, error => rejector({code: 400, message: error}))) {
         return;
       }
-      composeMessage(req, body, (message) => {
+      barylka.composeMessage(req, body, (message) => {
         // TODO if there is more than one file supplied, put first in the entry and the rest in the comment
-        // FIXME forward rejector
         WykopAPI.addEntry({body:message, adultmedia:body.adultmedia.toString()}, (Array.isArray(files) ? files[0] : files), wykopResponse => {
           logger.debug("Received response from wykop: ", wykopResponse);
           logger.trace("Entry url: ", WykopAPI.entryUrl(wykopResponse.data.id));
@@ -222,7 +143,6 @@ module.exports = function(router, config, logger) {
     validated.then(valid => res.status(200).send({id: valid}))
       .catch(err => {
         logger.error(`Validation error: ${err.code} ${err.message}`);
-        //res.set('Content-Type', 'text/plain');
         if (err.code && err.message) {
           res.status(err.code).send(err.message);
         } else if (err.code && err.message_pl) {
@@ -252,7 +172,7 @@ module.exports = function(router, config, logger) {
       if (!validateInputBody(body, error => rejector({code: 400, message: error}))) {
         return;
       }
-      composeMessage(req, body, (message) => {
+      barylka.composeMessage(req, body, (message) => {
         if (body.adultmedia) {
           message += "\n+18";
         }
@@ -262,7 +182,6 @@ module.exports = function(router, config, logger) {
     validated.then(valid => res.status(200).send(valid))
       .catch(err => {
         logger.error(`Validation error: ${err.code} ${err.message}`);
-        //res.set('Content-Type', 'text/plain');
         res.status(err.code).send(err.message);
       });
   }

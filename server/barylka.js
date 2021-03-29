@@ -64,5 +64,89 @@ module.exports = function(config, logger) {
     retriever(1);
   }
 
+  function allOrOne(arr, sep) {
+    if (new Set(arr).size == 1) {
+      return arr[0];
+    }
+    return arr.join(sep);
+  }
+
+  function shortPlasma(kind) {
+      return kind.match(/^osocze/) ? "osocze" : kind;
+  }
+
+  module.composeMessage = (req, body, onReady) => {
+    let output = "";
+    const donations = body.donations;
+    const sep = ", ";
+
+    output += "Data donacji - ";
+    const dateRegex = /(\d{4})-(\d{2})-(\d{2})/;
+    output += donations.map(d => d.date.replace(dateRegex, '$3.$2.$1')).join(sep);
+    output += "\nRodzaj donacji - ";
+    output += allOrOne(donations.map(d => shortPlasma(d.kind)), sep);
+
+    const cities = allOrOne(donations.filter(d => d.city).map(d => {
+      let out = "";
+      if (d.site != config.data.sites[config.data.sites.length - 1].name) {
+        out += `${d.site} `;
+      }
+      out += d.city
+      if (d.abroad && d.abroadCity.length) {
+        out += ` OT ${d.abroadCity}`;
+      } else if (d.bus) {
+        // TODO optional busCity?
+        out += " (donacja w krwiobusie)";
+      }
+      return out;
+    }), sep);
+
+    if (cities.length) {
+      output += `\nMiejsce donacji - ${cities}`;
+    }
+
+    if (body.group) {
+      output += `\nGrupa krwi - ${body.group}`;
+    }
+
+    if (Number.isInteger(body.privateCounter)) {
+      output += `\nPrywatny licznik - ${body.privateCounter} ml`;
+    }
+
+    if (body.orders.length) {
+      output += `\nPrzyznane odznaczenia - ${body.orders.join(sep)}`;
+    }
+
+    if (body.msg) {
+      output += `\n\n${body.msg.trim()}`;
+    }
+
+    // FIXME #barylkakrwi vs #baryłkakrwi
+    const missingTags = config.data.tags.filter(tag => {
+      return output.match(new RegExp("(?:^|\\s+|\\.|,|;)" + tag + "(?:\\s+|\\.|,|;|-|$)")) == null
+    });
+    if (missingTags.length) {
+      output += `\n${missingTags.join(" ")}`;
+    }
+
+    output += `\n\n${module.getFooter()}`;
+
+    const login = req.cookies.userData ? req.cookies.userData.login: null;
+    module.retrieveCurrentVolume(login, (volume) => {
+      const volumes = donations.map(d => d.volume);
+      const equation = module.composeEquation(volume, volumes);
+      output = `${equation}\n${output}`;
+      onReady(output);
+    });
+  }
+
+  module.getFooter = () => {
+    const addr = config.server.url;
+    const pref = config.server.urlprefix ? `/${config.server.urlprefix}` : "";
+    let output = `Wpis został dodany za pomocą [tego skryptu](${addr}${pref}).`;
+    output += `\n[Dodaj wpis](${addr}${pref}) | [Regulamin](${addr}/regulamin) | [Wzór wpisu](https://www.wykop.pl/wpis/49653241) | [Strona akcji](${addr})`;
+    return output;
+  }
+
   return module;
 }

@@ -4,7 +4,7 @@ const config = {data:require('../config/data.json'), confidential:require('../co
 const logger = require('simple-node-logger').createSimpleLogger();
 const barylka = require('../server/barylka.js')(config, logger);
 
-describe('Wykop', function() {
+describe('EquationParser', function() {
   describe('testForCurrentVolume', function() {
     it('should parse basic input', function() {
       const input = [
