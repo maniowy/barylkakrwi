@@ -170,7 +170,10 @@ label.is-small {
 }
 
 .progress {
-  width: 20vw;
+  width: 40vw;
+  @include from($tablet) {
+    width: 310px;
+  }
   margin: 0.1rem;
 }
 
