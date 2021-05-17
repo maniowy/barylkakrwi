@@ -46,6 +46,7 @@ class Wykop {
             connect: ["login", "connect"],
             login: ["Login", "Index"],
             addEntry: ["Entries", "Add"],
+            addEntryComment: ["Entries", "CommentAdd"],
             tags: ["Tags"],
             appKey: ["appkey"],
             userKey: ["userkey"]
@@ -146,12 +147,9 @@ class Wykop {
             .catch((err) => this.logger.error(err));
     }
 
-    async addEntry(request, file, onResult, onError) {
-        this.logger.debug(`addEntry request: `, request);
-        const url = this.createUrl({
-            urlParams: this.urlParams.addEntry
-        });
-        this.logger.trace("add entry url: ", url);
+    async addEntryCommon(url, request, file, onResult, onError) {
+        this.logger.debug(`addEntryCommon request: `, request);
+        this.logger.trace("addEntryCommon url: ", url);
 
         const data = request;
         const apisign = this.sign(url, data);
@@ -159,17 +157,17 @@ class Wykop {
 
         const dataStr = qs.stringify(data);
         const fd = new FormData();
-        if (file && file.embed) {
+        if (file) {
             let d;
             for (d in data) {
                 fd.append(d, data[d]);
             }
-            fd.append('embed', fs.createReadStream(file.embed.path));
+            fd.append('embed', fs.createReadStream(file.path));
         } else {
             this.logger.trace("add entry data:", dataStr.slice(0,300));
         }
 
-        const contentType = ((file && file.embed)
+        const contentType = (file
             ? fd.getHeaders()['content-type']
             : 'application/x-www-form-urlencoded');
 
@@ -179,7 +177,7 @@ class Wykop {
             'Content-Type': contentType
         };
 
-        if (file && file.embed) {
+        if (file) {
             let resolver;
             let promise = new Promise((resolve, reject) => { resolver = resolve});
             fd.getLength((err, length) => {
@@ -190,7 +188,7 @@ class Wykop {
         }
 
         postAxios(url,
-            (file&&file.embed ? fd : dataStr),
+            (file ? fd : dataStr),
             options,
             this.logger).then((res) => {
               this.logger.info("Received response: ", res);
@@ -199,6 +197,22 @@ class Wykop {
             this.logger.error("Failure: ", err);
             onError(err);
         });
+    }
+
+    async addEntry(request, file, onResult, onError) {
+        this.logger.debug(`addEntry request: `, request);
+        const url = this.createUrl({
+            urlParams: this.urlParams.addEntry
+        });
+        this.addEntryCommon(url, request, file, onResult, onError);
+    }
+
+    async addEntryComment(entryId, request, file, onResult, onError) {
+        this.logger.debug(`addEntryComment request: `, request);
+        const url = this.createUrl({
+            urlParams: this.urlParams.addEntryComment.concat(entryId)
+        });
+        this.addEntryCommon(url, request, file, onResult, onError);
     }
 }
 

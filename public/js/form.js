@@ -1,3 +1,5 @@
+let storage = { removedFiles: [], mainImage: 0 };
+
 function retrieveCurrentVolume(onReady) {
   let XHR = new XMLHttpRequest();
   XHR.responseType="text";
@@ -10,14 +12,66 @@ function retrieveCurrentVolume(onReady) {
   XHR.send();
 }
 
-function updateFilename() {
+function updatePhotos() {
+  storage.removedFiles = [];
   const files = document.getElementById("photoSelector")?.files;
   let fileName = document.querySelector("#inputform .file-name");
   if (files.length > 0) {
-    fileName.textContent = files[0].name;
+    fileName.textContent = [...files].map(f => f.name).join(', ');
   } else {
     fileName.textContent = "Wybierz zdjęcie";
   }
+  let spc = document.getElementById("selectorPreviewContainer");
+  while (spc.firstElementChild) {
+    spc.removeChild(spc.firstElementChild);
+  }
+  for (i = 0; i < files.length; i++) {
+    if (!files[i].type.startsWith('image/')) { continue; }
+    let div = document.createElement("div");
+    let img = document.createElement("img");
+    div.appendChild(img);
+    div.setAttribute('file_id', i);
+    let span = document.createElement("span");
+    span.classList.add("selectorImageDismiss");
+    let icon = document.createElement("i");
+    icon.classList.add("fas");
+    icon.classList.add("fa-times-circle");
+    icon.classList.add("fa-2x");
+    span.onclick = removeImage;
+    span.appendChild(icon);
+    div.appendChild(span);
+    spc.appendChild(div);
+    img.onclick = changeMainImage;
+    let reader = new FileReader();
+    reader.onload = e => img.setAttribute("src", e.target.result);
+    reader.readAsDataURL(files[i]);
+  }
+  if (files.length > 1) {
+    spc.children[0].firstElementChild.classList.add('mainImage');
+    storage.mainImage = 0;
+  }
+}
+
+function changeMainImage(event) {
+  let spc = document.getElementById("selectorPreviewContainer");
+  for (i of spc.children) {
+    i.firstElementChild.classList.remove('mainImage');
+  }
+  let img = event.target;
+  img.classList.add('mainImage');
+  storage.mainImage = parseInt(img.parentElement.getAttribute('file_id'));
+}
+
+function removeImage(event) {
+  const div = event.currentTarget.parentElement
+  storage.removedFiles.push(div.getAttribute('file_id'));
+  let container = div.parentElement;
+  container.removeChild(div);
+  if (container.childElementCount && ![...container.children].filter(c => c.firstElementChild.classList.contains('mainImage')).length) {
+    container.children[0].firstElementChild.classList.add('mainImage');
+    storage.mainImage = 0;
+  }
+  // FIXME update file names
 }
 
 function scaleVolume(volume, kind) {
@@ -81,9 +135,11 @@ function submitForm() {
 
   const fd = new FormData();
   fd.append("body", JSON.stringify(request));
-  const files = document.getElementById("photoSelector")?.files;
-  for (f of files) {
-      fd.append('embed', f);
+  let files = [...document.getElementById("photoSelector")?.files];
+  [files[0], files[storage.mainImage]] = [files[storage.mainImage], files[0]];
+  for (i = 0; i < files.length; i++) {
+    if (!files[i].type.startsWith('image/') || storage.removedFiles.includes(`${i}`)) { continue; }
+    fd.append('embed', files[i]);
   }
 
   fetch(`${urlPrefix}/addEntry`, {
@@ -182,17 +238,18 @@ function showPreview() {
       while (imgs.firstChild) {
           imgs.removeChild(imgs.firstChild);
       }
-      const files = document.getElementById("photoSelector")?.files;
-      for (f of files) {
-          if (!f.type.startsWith('image/')) { continue }
+      let files = [...document.getElementById("photoSelector")?.files];
+      [files[0], files[storage.mainImage]] = [files[storage.mainImage], files[0]];
+      for (i = 0; i < files.length; i++) {
+          if (!files[i].type.startsWith('image/') || storage.removedFiles.includes(`${i}`)) { continue; }
           const img = document.createElement('img');
           img.classList.add('obj');
-          img.file = f;
+          img.file = files[i];
           imgs.appendChild(img);
 
           const reader = new FileReader();
           reader.onload = ((aImg) => { return function(e) { aImg.src = e.target.result; }; })(img);
-          reader.readAsDataURL(f);
+          reader.readAsDataURL(files[i]);
       }
       let preview = document.getElementById("preview");
       preview.classList.add('is-active');

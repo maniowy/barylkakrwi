@@ -19,7 +19,8 @@ block content
                       type='file',
                       accept="image/*"
                       required
-                      onchange="updateFilename()"
+                      onchange="updatePhotos()"
+                      multiple
                     )
                     span.file-cta
                       span.file-icon
@@ -30,6 +31,7 @@ block content
                     p.checkbox.va-top
                       span.va-middle +18
                       input.ml-1.va-middle#adult(type='checkbox')
+              div.container#selectorPreviewContainer
               fieldset
                 legend
                   span Opcjonalne

@@ -125,15 +125,23 @@ module.exports = function(router, config, logger) {
         return;
       }
       logger.info(`addEntry request: `, fields);
+      logger.info(`files: `, files);
       const body = JSON.parse(fields.body)
       if (!validate(body, files, error => rejector({code: 400, message: error}))) {
         return;
       }
       barylka.composeMessage(req, body, (message) => {
-        // TODO if there is more than one file supplied, put first in the entry and the rest in the comment
-        WykopAPI.addEntry({body:message, adultmedia:body.adultmedia.toString()}, (Array.isArray(files) ? files[0] : files), wykopResponse => {
+        WykopAPI.addEntry({body:message, adultmedia:body.adultmedia.toString()}, (files.embed && Array.isArray(files.embed) ? files.embed[0] : files.embed), wykopResponse => {
           logger.debug("Received response from wykop: ", wykopResponse);
           logger.trace("Entry url: ", WykopAPI.entryUrl(wykopResponse.data.id));
+          if (Array.isArray(files.embed)) {
+            const filesTail = [...files.embed].slice(1);
+            for (f of filesTail) {
+              WykopAPI.addEntryComment(wykopResponse.data.id, {}, f,
+                response => logger.debug("Comment added: ", response),
+                e => logger.error("Failed to add comment: ", e));
+            }
+          }
           resolver(wykopResponse.data.id);
         }, error => {
           rejector(error);

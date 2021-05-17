@@ -194,4 +194,32 @@ input[type=number] {
 
 #previewImages > img {
   max-width: 60vw;
+  display: block;
+}
+
+#selectorPreviewContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#selectorPreviewContainer > div {
+  position: relative;
+}
+
+.selectorImageDismiss {
+  position: absolute;
+  left: calc(20vmin - 2em);
+  color: red;
+}
+
+#selectorPreviewContainer img {
+  width: 20vmin;
+  height: 20vmin;
+  margin-right: 5px;
+}
+
+.mainImage {
+  border: 4px;
+  border-style: solid;
+  border-color: green;
 }
