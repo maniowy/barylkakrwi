@@ -192,9 +192,19 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-#previewImages > img {
+#previewImages > div {
+  border-radius: 4px;
+  padding: 0.5em;
+}
+
+#previewImages > div:nth-child(even) {
+  background: #ededed;
+}
+
+#previewImages img {
   max-width: 60vw;
   display: block;
+  margin-bottom: 0.5em;
 }
 
 #selectorPreviewContainer {

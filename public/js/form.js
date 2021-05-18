@@ -242,10 +242,18 @@ function showPreview() {
       [files[0], files[storage.mainImage]] = [files[storage.mainImage], files[0]];
       for (i = 0; i < files.length; i++) {
           if (!files[i].type.startsWith('image/') || storage.removedFiles.includes(`${i}`)) { continue; }
+          const div = document.createElement('div');
           const img = document.createElement('img');
           img.classList.add('obj');
           img.file = files[i];
-          imgs.appendChild(img);
+          div.appendChild(img);
+          imgs.appendChild(div);
+
+          if (i) {
+            let span = document.createElement('span');
+            span.innerText += "Komentarz " + i;
+            div.prepend(span);
+          }
 
           const reader = new FileReader();
           reader.onload = ((aImg) => { return function(e) { aImg.src = e.target.result; }; })(img);
