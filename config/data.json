@@ -1,7 +1,7 @@
 {
   "startDate":"2021-02-25",
   "tag": "barylkakrwi",
-  "tags": ["#testowabaryłkakrwi", "#testowekrwiodawstwo"],
+  "tags": ["#testowabaryłkakrwi"],
   "volume":328000,
   "kinds": [
     {"id":"fullblood", "name": "krew pełna", "vol":450, "max":550},
