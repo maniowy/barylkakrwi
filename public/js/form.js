@@ -68,7 +68,7 @@ function removeImage(event) {
   for (i = 0; i < spc.childElementCount; i++) {
     spc.children[i].setAttribute('file_id', i);
   }
-  if (spc.childElementCount > 1 && ![...spc.children].filter(c => c.firstElementChild.classList.contains('mainImage')).length) {
+  if (spc.childElementCount > 0 && ![...spc.children].filter(c => c.classList.contains('mainImage')).length) {
     spc.children[0].firstElementChild.classList.add('mainImage');
     storage.mainImage = 0;
   }
@@ -250,7 +250,7 @@ function showPreview() {
       let files = storage.files;
       let indices = [storage.mainImage];
       indices = indices.concat([...files.keys()].filter(k => k != storage.mainImage));
-      for (i of indices) {
+      for (i = 0; i < indices.length; i++) {
           const div = document.createElement('div');
           const img = document.createElement('img');
           img.classList.add('obj');
@@ -265,7 +265,7 @@ function showPreview() {
 
           let reader = new FileReader();
           reader.onload = e => img.setAttribute("src", e.target.result);
-          reader.readAsDataURL(files[i]);
+          reader.readAsDataURL(files[indices[i]]);
       }
       let preview = document.getElementById("preview");
       preview.classList.add('is-active');
