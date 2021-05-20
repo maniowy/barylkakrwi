@@ -1,4 +1,4 @@
-let storage = { removedFiles: [], mainImage: 0 };
+let storage = { files: [], mainImage: 0 };
 
 function retrieveCurrentVolume(onReady) {
   let XHR = new XMLHttpRequest();
@@ -12,25 +12,17 @@ function retrieveCurrentVolume(onReady) {
   XHR.send();
 }
 
-function updatePhotos() {
-  storage.removedFiles = [];
-  const files = document.getElementById("photoSelector")?.files;
-  let fileName = document.querySelector("#inputform .file-name");
-  if (files.length > 0) {
-    fileName.textContent = [...files].map(f => f.name).join(', ');
-  } else {
-    fileName.textContent = "Wybierz zdjęcie";
-  }
+function updatePhotos(event) {
+  let photoSelector = document.getElementById("photoSelector");
+  const files = [...photoSelector.files].filter(f => { return f.type.startsWith('image/') &&
+      !storage.files.map(f => f.name).includes(f.name) });
+  const idxStart = storage.files.length;
+  storage.files = storage.files.concat(new Array(files.length));
   let spc = document.getElementById("selectorPreviewContainer");
-  while (spc.firstElementChild) {
-    spc.removeChild(spc.firstElementChild);
-  }
   for (i = 0; i < files.length; i++) {
-    if (!files[i].type.startsWith('image/')) { continue; }
     let div = document.createElement("div");
     let img = document.createElement("img");
     div.appendChild(img);
-    div.setAttribute('file_id', i);
     let span = document.createElement("span");
     span.classList.add("selectorImageDismiss");
     let icon = document.createElement("i");
@@ -44,12 +36,18 @@ function updatePhotos() {
     img.onclick = changeMainImage;
     let reader = new FileReader();
     reader.onload = e => img.setAttribute("src", e.target.result);
+    storage.files[i + idxStart] = files[i];
     reader.readAsDataURL(files[i]);
   }
-  if (files.length > 1) {
+  for (i = 0; i < spc.childElementCount; i++) {
+    spc.children[i].setAttribute('file_id', i);
+  }
+  if (spc.childElementCount > 1 && ![...spc.children].filter(c => c.firstElementChild.classList.contains('mainImage')).length) {
     spc.children[0].firstElementChild.classList.add('mainImage');
     storage.mainImage = 0;
   }
+  photoSelector.files = new DataTransfer().files;
+  photoSelector.required = (storage.files.length == 0);
 }
 
 function changeMainImage(event) {
@@ -64,14 +62,18 @@ function changeMainImage(event) {
 
 function removeImage(event) {
   const div = event.currentTarget.parentElement
-  storage.removedFiles.push(div.getAttribute('file_id'));
-  let container = div.parentElement;
-  container.removeChild(div);
-  if (container.childElementCount && ![...container.children].filter(c => c.firstElementChild.classList.contains('mainImage')).length) {
-    container.children[0].firstElementChild.classList.add('mainImage');
+  storage.files.splice(div.getAttribute('file_id'), 1);
+  let spc = div.parentElement;
+  spc.removeChild(div);
+  for (i = 0; i < spc.childElementCount; i++) {
+    spc.children[i].setAttribute('file_id', i);
+  }
+  if (spc.childElementCount > 1 && ![...spc.children].filter(c => c.firstElementChild.classList.contains('mainImage')).length) {
+    spc.children[0].firstElementChild.classList.add('mainImage');
     storage.mainImage = 0;
   }
-  // FIXME update file names
+  let selector = document.getElementById("photoSelector");
+  selector.required = (storage.files.length == 0);
 }
 
 function scaleVolume(volume, kind) {
@@ -121,10 +123,18 @@ function collectFormData() {
   }
 }
 
-function submitForm() {
+function validate() {
   let form = document.getElementById("inputform");
+
   if (!form.checkValidity()) {
     form.reportValidity();
+    return false;
+  }
+  return true;
+}
+
+function submitForm() {
+  if (!validate()) {
     return;
   }
   let button = document.getElementById("submit");
@@ -135,10 +145,11 @@ function submitForm() {
 
   const fd = new FormData();
   fd.append("body", JSON.stringify(request));
-  let files = [...document.getElementById("photoSelector")?.files];
-  [files[0], files[storage.mainImage]] = [files[storage.mainImage], files[0]];
-  for (i = 0; i < files.length; i++) {
-    if (!files[i].type.startsWith('image/') || storage.removedFiles.includes(`${i}`)) { continue; }
+
+  let files = storage.files;
+  let indices = [storage.mainImage];
+  indices = indices.concat([...files.keys()].filter(k => k != storage.mainImage));
+  for (i of indices) {
     fd.append('embed', files[i]);
   }
 
@@ -213,9 +224,7 @@ function requestPreview(onReady, onError) {
 }
 
 function showPreview() {
-  let form = document.getElementById("inputform");
-  if (!form.checkValidity()) {
-    form.reportValidity();
+  if (!validate()) {
     return;
   }
   let button = document.getElementById("previewButton");
@@ -238,14 +247,13 @@ function showPreview() {
       while (imgs.firstChild) {
           imgs.removeChild(imgs.firstChild);
       }
-      let files = [...document.getElementById("photoSelector")?.files];
-      [files[0], files[storage.mainImage]] = [files[storage.mainImage], files[0]];
-      for (i = 0; i < files.length; i++) {
-          if (!files[i].type.startsWith('image/') || storage.removedFiles.includes(`${i}`)) { continue; }
+      let files = storage.files;
+      let indices = [storage.mainImage];
+      indices = indices.concat([...files.keys()].filter(k => k != storage.mainImage));
+      for (i of indices) {
           const div = document.createElement('div');
           const img = document.createElement('img');
           img.classList.add('obj');
-          img.file = files[i];
           div.appendChild(img);
           imgs.appendChild(div);
 
@@ -255,8 +263,8 @@ function showPreview() {
             div.prepend(span);
           }
 
-          const reader = new FileReader();
-          reader.onload = ((aImg) => { return function(e) { aImg.src = e.target.result; }; })(img);
+          let reader = new FileReader();
+          reader.onload = e => img.setAttribute("src", e.target.result);
           reader.readAsDataURL(files[i]);
       }
       let preview = document.getElementById("preview");
