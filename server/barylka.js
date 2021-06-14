@@ -75,7 +75,7 @@ module.exports = function(config, logger) {
       return kind.match(/^osocze/) ? "osocze" : kind;
   }
 
-  module.composeMessage = (req, body, onReady) => {
+  module.composeMessage = (req, body, params, onReady) => {
     let output = "";
     const donations = body.donations;
     const sep = ", ";

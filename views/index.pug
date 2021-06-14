@@ -9,7 +9,7 @@ block content
     div.columns
       div.column.is-half#formcolumn
         div.box
-          form.has-text-left#inputform(onsubmit="return submitForm();")
+          form.has-text-left#inputform(onsubmit=`return submitForm(${JSON.stringify(params)});`)
             div.container
               +donation(0, false)
               div.field.mt-2
@@ -69,7 +69,9 @@ block content
                       | #{configData.tags.join(" ")}
               div.field.buttons.mt-2
                 button.button.is-danger#submit(type='submit') Wyślij
-                button.button.is-danger#previewButton(type='button' name='previewButton', onclick="showPreview();") Podgląd
+                button.button.is-danger#previewButton(type='button'
+                                                      name='previewButton',
+                                                      onclick=`showPreview(${JSON.stringify(params)});`) Podgląd
   div.modal#preview
     div.modal-background(onclick="hidePreview();")
     div.modal-content.has-text-left.w-auto

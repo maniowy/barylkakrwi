@@ -31,7 +31,8 @@ module.exports = function(router, config, logger) {
       configData: config.data,
       appPrefix: config.server.appprefix,
       urlPrefix: urlPrefix,
-      user: userData.login
+      user: userData.login,
+      params: req.query
     });
   };
 

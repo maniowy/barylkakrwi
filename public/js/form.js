@@ -133,7 +133,7 @@ function validate() {
   return true;
 }
 
-function submitForm() {
+function submitForm(params) {
   if (!validate()) {
     return;
   }
@@ -145,6 +145,7 @@ function submitForm() {
 
   const fd = new FormData();
   fd.append("body", JSON.stringify(request));
+  fd.append("params", JSON.stringify(params));
 
   let files = storage.files;
   let indices = [storage.mainImage];
@@ -185,11 +186,12 @@ function submitForm() {
     .catch(err => console.error(err));
 }
 
-function requestPreview(onReady, onError) {
+function requestPreview(params, onReady, onError) {
   let request = collectFormData();
 
   const fd = new FormData();
   fd.append("body", JSON.stringify(request));
+  fd.append("params", JSON.stringify(params));
 
   fetch(`${urlPrefix}/preview`, {
       method: 'POST',
@@ -223,7 +225,7 @@ function requestPreview(onReady, onError) {
     .catch(err => console.error(err));
 }
 
-function showPreview() {
+function showPreview(params) {
   if (!validate()) {
     return;
   }
@@ -236,7 +238,7 @@ function showPreview() {
       button.classList.remove('is-loading');
   }
 
-  requestPreview(response => {
+  requestPreview(params, response => {
       const out = document.getElementById("previewOutput");
       out.innerText = response.body;
       const links = [...out.innerText.matchAll(/\[(.*?)\]\((.*?)\)/g)];

@@ -130,7 +130,7 @@ module.exports = function(router, config, logger) {
       if (!validate(body, files, error => rejector({code: 400, message: error}))) {
         return;
       }
-      barylka.composeMessage(req, body, (message) => {
+      barylka.composeMessage(req, body, fields.params, (message) => {
         WykopAPI.addEntry({body:message, adultmedia:body.adultmedia.toString()}, (files.embed && Array.isArray(files.embed) ? files.embed[0] : files.embed), wykopResponse => {
           logger.debug("Received response from wykop: ", wykopResponse);
           logger.trace("Entry url: ", WykopAPI.entryUrl(wykopResponse.data.id));
@@ -180,7 +180,7 @@ module.exports = function(router, config, logger) {
       if (!validateInputBody(body, error => rejector({code: 400, message: error}))) {
         return;
       }
-      barylka.composeMessage(req, body, (message) => {
+      barylka.composeMessage(req, body, fields.params, (message) => {
         if (body.adultmedia) {
           message += "\n+18";
         }
