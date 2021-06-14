@@ -81,5 +81,11 @@
     {"id":"zdp", "name":"Zasłużony Dawca Przeszczepu", "title": "Odznaczenie przyznawane osobom, które co najmniej dwa razy oddały szpik lub inne regenerujące się komórki i tkanki"}
   ],
   "supporters":[
+    {
+      "id":"mobilevikings",
+      "nick":"@MobileVikingsPL",
+      "url":"https://mobilevikings.pl",
+      "img":"mobilevikings.png"
+    }
   ]
 }
