@@ -1,7 +1,7 @@
 {
   "startDate":"2021-06-09",
   "tag": "barylkakrwi",
-  "tags": ["#testowabaryłkakrwi"],
+  "tags": ["#testowabarylkakrwi"],
   "volume":328000,
   "kinds": [
     {"id":"fullblood", "name": "krew pełna", "vol":450, "max":550},
@@ -79,5 +79,7 @@
     {"id":"zdzn", "name":"ZHDK ZDZN", "title": "Zasłużony Honorowy Dawca Krwi: Zasłużony Dla Zdrowia Narodu. Odznaczenie przyznawane po oddaniu min. 20 litrów krwi"},
     {"id":"dp", "name":"Dawca Przeszczepu", "title": "Odznaczenie przyznawane osobom, które jednorazowo oddały szpik lub inne regenerujące się komórki i tkanki"},
     {"id":"zdp", "name":"Zasłużony Dawca Przeszczepu", "title": "Odznaczenie przyznawane osobom, które co najmniej dwa razy oddały szpik lub inne regenerujące się komórki i tkanki"}
+  ],
+  "supporters":[
   ]
 }

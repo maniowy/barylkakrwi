@@ -121,12 +121,23 @@ module.exports = function(config, logger) {
       output += `\n\n${body.msg.trim()}`;
     }
 
-    // FIXME #barylkakrwi vs #baryłkakrwi
+    const missingWordRegexp = word => new RegExp("(?:^|\\s+|\\.|,|;)" + word + "(?:\\s+|\\.|,|;|-|$)");
+
     const missingTags = config.data.tags.filter(tag => {
-      return output.match(new RegExp("(?:^|\\s+|\\.|,|;)" + tag + "(?:\\s+|\\.|,|;|-|$)")) == null
+      return output.match(missingWordRegexp(tag)) == null
     });
     if (missingTags.length) {
       output += `\n${missingTags.join(" ")}`;
+    }
+
+    const paramsJson = JSON.parse(params);
+    const missingSupporters = config.data.supporters.filter(s => {
+      return paramsJson.hasOwnProperty(s.id);
+    }).filter(s => {
+      return output.match(missingWordRegexp(s.nick)) == null
+    });
+    if (missingSupporters.length) {
+      output += ` ${missingSupporters.map(s => s.nick).join(" ")}`;
     }
 
     output += `\n\n${module.getFooter()}`;

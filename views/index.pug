@@ -66,12 +66,24 @@ block content
                       |
                       |
                       |
-                      | #{configData.tags.join(" ")}
+                      | #{configData.tags.join(" ")} #{configData.supporters.filter(s => params.hasOwnProperty(s.id)).map(s => s.nick).join(" ")}
               div.field.buttons.mt-2
                 button.button.is-danger#submit(type='submit') Wyślij
                 button.button.is-danger#previewButton(type='button'
                                                       name='previewButton',
                                                       onclick=`showPreview(${JSON.stringify(params)});`) Podgląd
+              - const supporters = configData.supporters.filter(s => params.hasOwnProperty(s.id));
+                if supporters.length > 0
+                  div#partners
+                    div
+                      span Partnerzy akcji:
+                    each supporter in supporters
+                      div
+                        a(href=`${supporter.url}`
+                                rel="noopener noreferrer"
+                                target="_blank"
+                        )
+                          img(src=`/assets/${supporter.img}`)
   div.modal#preview
     div.modal-background(onclick="hidePreview();")
     div.modal-content.has-text-left.w-auto
