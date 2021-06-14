@@ -151,13 +151,18 @@ module.exports = function(router, config, logger) {
     validated.then(valid => res.status(200).send({id: valid}))
       .catch(err => {
         logger.error(`Validation error: ${err.code} ${err.message}`);
-        if (err.code && err.message) {
-          res.status(err.code).send(err.message);
-        } else if (err.code && err.message_pl) {
-          res.status(err.code).send(err.message_pl);
-        } else if (err.code && err.message_en) {
-          res.status(err.code).send(err.message_en);
+        let code = (err.code >= 300 && err.code <= 500) ? err.code : 400;
+        if (err.message) {
+          res.status(code).send(err.message);
+        } else if (err.message_pl) {
+          res.status(code).send(err.message_pl);
+        } else if (err.message_en) {
+          res.status(code).send(err.message_en);
         } else {
+          logger.error(`Error status: ${err.response.status}`);
+          logger.error(`Error message: ${err.response.data.error}`);
+          logger.trace("Error response: ", err.response);
+          logger.debug("Error response data: ", err.response.data);
           const protectors = config.serverData.protectors.map(p => `@${p}`).join(", ")
           res.status(500).send(`Przepraszamy, wystąpił nieokreślony błąd.\nSkontaktuj się z ${protectors} lub innymi opiekunami tagu.`);
         }
