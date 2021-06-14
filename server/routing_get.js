@@ -1,3 +1,5 @@
+const gUrl = require('url');
+
 module.exports = function(router, config, logger) {
   let module = {}
 
@@ -18,7 +20,7 @@ module.exports = function(router, config, logger) {
     let userData = req.cookies.userData;
     if (userData == undefined) {
       logger.debug("userData cookie not set");
-      res.redirect(`${urlPrefix}/connect`);
+      res.redirect(gUrl.format({pathname:`${urlPrefix}/connect`, query:req.query}));
       return
     }
     else {
@@ -70,17 +72,18 @@ module.exports = function(router, config, logger) {
   module.connect = (req, res) => {
     const urlPrefix = config.server.urlprefix ? `/${config.server.urlprefix}` : "";
     const protocol = config.server.secure ? "https" : "http";
-    let url = WykopAPI.connectUrl(`${protocol}://${req.headers.host}${urlPrefix}/storeSession`);
+    let url = WykopAPI.connectUrl(gUrl.format({pathname:`${protocol}://${req.headers.host}${urlPrefix}/storeSession`, query: req.query}));
     logger.debug("redirecting to: ", url);
     res.redirect(url);
   }
 
   module.storeSession = (req, res) => {
-    let cd = req.query.connectData;
+    const cd = req.query.connectData;
+    delete req.query.connectData;
     logger.trace("/login: Wykop connectData: ", cd);
-    let decoded = Buffer.from(cd, 'base64').toString('ascii');
+    const decoded = Buffer.from(cd, 'base64').toString('ascii');
     logger.debug("/login: connectData decoded: ", decoded);
-    let json = JSON.parse(decoded);
+    const json = JSON.parse(decoded);
     logger.debug("User login: ", json.login);
     logger.debug("User token: ", json.token);
     logger.debug("sign: ", json.sign);
@@ -97,7 +100,7 @@ module.exports = function(router, config, logger) {
         res.cookie('userData', {login: out.data.profile.login, userkey: out.data.userkey},
           { maxAge: 24*60*60*1000, httpOnly: true});
         WykopAPI.userKey = out.data.userkey;
-        res.redirect(`/${config.server.urlprefix}`);
+        res.redirect(gUrl.format({pathname:`/${config.server.urlprefix}`, query: req.query}));
       }
       else {
         res.sendStatus(sts);

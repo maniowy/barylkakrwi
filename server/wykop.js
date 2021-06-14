@@ -81,7 +81,7 @@ class Wykop {
 
     connectUrl(redirect) {
         const b64 = Buffer.from(redirect).toString('base64');
-        const encoded = encodeURI(b64);
+        const encoded = encodeURIComponent(b64);
         return this.createUrl({urlParams: this.urlParams.connect, namedParams: {redirect:encoded, secure: this.sign(redirect)}});
     }
 
@@ -115,7 +115,7 @@ class Wykop {
     }
 
     sign(url, post) {
-        this.logger.log(`sign: ${url}`, (post ? JSON.stringify(post).slice(0,150) : ""));
+        this.logger.debug(`sign: ${url}`, (post ? JSON.stringify(post).slice(0,150) : ""));
         let postString = ''
         if (post) {
             if (Array.isArray(post)) {
