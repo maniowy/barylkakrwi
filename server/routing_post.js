@@ -105,16 +105,6 @@ module.exports = function(router, config, logger) {
 
   module.addEntry = (req, res) => {
     logger.trace("Received multi-part addEntry request");
-    if (!req.cookies) {
-      res.sendStatus(401);
-      return;
-    }
-    const userData = req.cookies.userData;
-    if (userData == undefined) {
-      res.sendStatus(401);
-      return;
-    }
-    WykopAPI.userKey = userData.userkey;
     const form = formidable({multiples: true});
     let resolver;
     let rejector;

@@ -3,6 +3,8 @@ const {url} = require('url');
 module.exports = (config, logger) => {
     let module = {}
 
+    const secure = require('./secure.js')(config, logger);
+
     const WykopAPI = require('./wykop.js')(logger);
     WykopAPI.provideSecrets(config.confidential);
 
@@ -37,7 +39,7 @@ module.exports = (config, logger) => {
             }
         }
         else if (token === undefined) {
-            refreshToken(rtoken, req, res, next);
+            refreshToken(secure.decrypt(rtoken), req, res, next);
         }
         else {
             next();
@@ -65,10 +67,10 @@ module.exports = (config, logger) => {
             if (req.cookies.userData === undefined) {
                 WykopAPI.userProfile(token, (username) => {
                     logger.info("User logged in: ", username);
-                    res.cookie('userData', {login: username, rt: rtoken},
+                    const cryptoToken = secure.encrypt(rtoken);
+                    res.cookie('userData', {login: username, rt: cryptoToken},
                     { maxAge: 24*60*60*1000, httpOnly: true, secure: true, sameSite: 'Strict'});
                     next();
-                    //res.redirect(URL.format({pathname:`/${config.server.urlprefix}`, query: req.query}));
                 }, err => {
                     if (err?.code && err?.error && err?.error?.message) {
                         res.status(err.code).send(err.error.message);
