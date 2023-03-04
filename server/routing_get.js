@@ -18,9 +18,10 @@ module.exports = function(router, config, logger) {
 
     const urlPrefix = config.server.urlprefix ? `/${config.server.urlprefix}` :"";
     let userData = req.cookies.userData;
-    if (userData == undefined) {
+    if (userData === undefined) {
+      // Should never happen?
       logger.debug("userData cookie not set");
-      res.redirect(gUrl.format({pathname:`${urlPrefix}/connect`, query:req.query}));
+      res.redirect(gUrl.format({pathname:`${urlPrefix}/`, query:req.query}));
       return
     }
     else {
@@ -50,9 +51,16 @@ module.exports = function(router, config, logger) {
   module.page = (req, res) => {
     barylka.retrievePage(req.params.id, (entries) => { res.send(entries) });
   }
+
   module.latest = (req, res) => {
-    const login = req.cookies.userData ? req.cookies.userData.login: null;
-    barylka.retrieveCurrentVolume(login, (volume) => { res.send(`{"volume":${volume}}`) });
+    const token = req?.locals?.token;
+    const retrieve = (token) => barylka.retrieveCurrentVolume(token, (volume) => { res.send(`{"volume":${volume}}`) });
+    if (token === undefined) {
+        WykopAPI.getToken(retrieve);
+    }
+    else {
+      retrieve(token);
+    }
   }
 
   module.thanks = (req, res) => {
@@ -66,54 +74,6 @@ module.exports = function(router, config, logger) {
       id: req.params.id,
       title: 'Baryłka krwi',
       user: userData.login
-    });
-  }
-
-  module.connect = (req, res) => {
-    const urlPrefix = config.server.urlprefix ? `/${config.server.urlprefix}` : "";
-    const protocol = config.server.secure ? "https" : "http";
-    let url = WykopAPI.connectUrl(gUrl.format({pathname:`${protocol}://${req.headers.host}${urlPrefix}/storeSession`, query: req.query}));
-    logger.debug("redirecting to: ", url);
-    res.redirect(url);
-  }
-
-  module.storeSession = (req, res) => {
-    const cd = req.query.connectData;
-    delete req.query.connectData;
-    logger.trace("/login: Wykop connectData: ", cd);
-    const decoded = Buffer.from(cd, 'base64').toString('ascii');
-    logger.debug("/login: connectData decoded: ", decoded);
-    const json = JSON.parse(decoded);
-    logger.debug("User login: ", json.login);
-    logger.debug("User token: ", json.token);
-    logger.debug("sign: ", json.sign);
-
-    if (req.cookies) {
-      logger.debug('Cookies: ', req.cookies);
-    }
-    if (req.signedCookies) {
-      logger.debug('Signed cookies: ', req.signedCookies);
-    }
-    WykopAPI.login(json.login, json.token, (sts, out) => {
-      if (sts == 200) {
-        logger.info("Logged in: ", out.data.profile.login);
-        res.cookie('userData', {login: out.data.profile.login, userkey: out.data.userkey},
-          { maxAge: 24*60*60*1000, httpOnly: true});
-        WykopAPI.userKey = out.data.userkey;
-        res.redirect(gUrl.format({pathname:`/${config.server.urlprefix}`, query: req.query}));
-      }
-      else {
-        res.sendStatus(sts);
-      }
-    }, err => {
-      if (err.code && err.message_pl) {
-        res.status(err.code).send(err.message_pl);
-      } else if (err.code && err.message_en) {
-        res.status(err.code).send(err.message_en);
-      } else {
-        const protectors = config.serverData.protectors.map(p => `@${p}`).join(", ")
-        res.status(500).send(`Przepraszamy, wystąpił nieokreślony błąd.\nSkontaktuj się z ${protectors} lub innymi opiekunami tagu.`);
-      }
     });
   }
 

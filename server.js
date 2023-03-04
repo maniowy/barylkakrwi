@@ -2,12 +2,15 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const logger = require('./server/logger.js')();
 const app = express();
+const audit = require('express-requests-logger')
+
 require('pug')
 
 // generating html with pug
 app.set('view engine', 'pug');
 app.use(cookieParser());
 app.use(express.static(__dirname + '/public'));
+app.use(audit({logger: logger}))
 
 const config = {
   data: require('./config/data.json'),
@@ -33,14 +36,15 @@ app.use(subdomainForward(config.server.subdomains, router));
 
 const pref = config.server.urlprefix ? `/${config.server.urlprefix}` : "";
 
+const auth = require('./server/auth.js')(config, logger);
+router.use(auth.verify);
+
 const getRouting = require('./server/routing_get.js')(router, config, logger);
 router.get(`${pref}/`, getRouting.root);
 router.get(`${pref}/donation/:id`, getRouting.donation);
 router.get(`${pref}/page/:id`, getRouting.page);
 router.get(`${pref}/latest`, getRouting.latest);
 router.get(`${pref}/thankyou/:id`, getRouting.thanks);
-router.get(`${pref}/connect`, getRouting.connect);
-router.get(`${pref}/storeSession`, getRouting.storeSession);
 router.get(`${pref}/disconnect`, getRouting.disconnect);
 router.get(`${pref}/*`, getRouting.any);
 
@@ -53,3 +57,8 @@ router.post(`${pref}/preview`, postRouting.preview);
 const server = app.listen(config.server.port, () => {
   logger.info(`Express running -> PORT ${server.address().port}`);
 });
+
+/*server.setTimeout(30000, (socket) => {
+  logger.error("Timeout");
+  socket.destroy();
+});*/

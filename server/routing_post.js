@@ -119,7 +119,7 @@ module.exports = function(router, config, logger) {
     let resolver;
     let rejector;
     let validated = new Promise((resolve, reject) => { resolver = resolve; rejector = reject;});
-    form.parse(req, (err, fields, files) => {
+    form.parse(req, async (err, fields, files) => {
       if (err) {
         next(err);
         return;
@@ -131,13 +131,17 @@ module.exports = function(router, config, logger) {
         return;
       }
       barylka.composeMessage(req, body, fields.params, (message) => {
-        WykopAPI.addEntry({body:message, adultmedia:body.adultmedia.toString()}, (files.embed && Array.isArray(files.embed) ? files.embed[0] : files.embed), wykopResponse => {
+        WykopAPI.addEntry({content:message, adult:body.adultmedia},
+              (files.embed && Array.isArray(files.embed) ? files.embed[0] : files.embed),
+              req.locals?.token,
+              wykopResponse => {
           logger.debug("Received response from wykop: ", wykopResponse);
           logger.trace("Entry url: ", WykopAPI.entryUrl(wykopResponse.data.id));
           if (Array.isArray(files.embed)) {
             const filesTail = [...files.embed].slice(1);
             for (f of filesTail) {
               WykopAPI.addEntryComment(wykopResponse.data.id, {}, f,
+                req.locals?.token,
                 response => logger.debug("Comment added: ", response),
                 e => logger.error("Failed to add comment: ", e));
             }

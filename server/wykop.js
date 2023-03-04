@@ -1,8 +1,4 @@
-const http = require('https');
-const md5 = require('md5');
 const axios = require('axios');
-const qs = require('qs');
-const FormData = require('form-data');
 const fs = require('fs');
 
 function postAxios(url, data, header, logger) {
@@ -21,6 +17,7 @@ function postAxios(url, data, header, logger) {
     return new Promise((resolve, reject) => {
         axios.post(url, data, {headers: header})
             .then((res) => {
+                logger.debug("got response: ", res.data);
                 if (res.data.data == null) {
                     if (res.data.error) {
                         reject(res.data.error);
@@ -28,191 +25,211 @@ function postAxios(url, data, header, logger) {
                     else {
                         reject(res)
                     }
-                    //} else if (urlParams[0].toLowerCase() == 'login') {
-                    //	this.userKey = res.data.data.userkey;
-                    //	resolve(res.data);
                 } else {
                     resolve(res.data);
                 }
             })
-            .catch((err) => reject(err));
+            .catch((err) => {
+                logger.debug('Axios POST error:  ', err)
+                reject(err)
+            });
     });
 }
 
 class Wykop {
+
     constructor(logger) {
-        this.baseUrl = "https://a2.wykop.pl";
-        this.urlParams = {
-            connect: ["login", "connect"],
-            login: ["Login", "Index"],
-            addEntry: ["Entries", "Add"],
-            addEntryComment: ["Entries", "CommentAdd"],
-            tags: ["Tags"],
-            appKey: ["appkey"],
-            userKey: ["userkey"]
-        }
+        this.baseUrl = "https://wykop.pl/api/v3";
         this.logger = logger;
     }
+
     provideSecrets(confidential) {
         this.appKey = confidential.appkey;
         this.secret = confidential.secret;
     }
 
-    createUrlArgs(urlParams, apiParams, namedParams) {
-        const baseUrl = `${this.baseUrl}/${urlParams.join('/')}`;
-        let apiParamsJoined = "";
-        if (apiParams) {
-            apiParmsJoined = `/${apiParms.join('/')}`;
+    async getToken(onSuccess)
+    {
+        const data = {data: {key: this.appKey, secret: this.secret}};
+
+        try {
+            this.logger.debug("Waiting for axios?");
+            let result = await postAxios(`${this.baseUrl}/auth`,
+                data,
+                {'ContentType': 'application/json', 'Accept': 'application/json'},
+                this.logger
+            );
+            this.logger.info("Received response: ", result);
+            onSuccess(result.data.token);
         }
+        catch (err) {
+            this.logger.error("Failed to retrieve the token: ", err);
+        }
+    }
+
+    async refreshToken(rToken, onSuccess)
+    {
+        const data = {data: {refresh_token: rToken}};
+
+        try {
+            let result = await postAxios(`${this.baseUrl}/refresh-token`,
+                data,
+                {'ContentType': 'application/json', 'Accept': 'application/json'},
+                this.logger
+            );
+            this.logger.info("Received response: ", result);
+            onSuccess(result.data.token, result.data.refresh_token);
+        }
+        catch (err) {
+            this.logger.error("Failed to refresh the token: ", err);
+        }
+    }
+
+    createUrlArgs(urlParams, namedParams, queryParams) {
+        const baseUrl = `${this.baseUrl}/${urlParams.join('/')}`;
         let namedParamsJoined = "";
         if (namedParams) {
             namedParamsJoined = Object.entries(namedParams).map(([key, value]) => `/${key}/${value}`).join('');
         }
-        let ukey = "";
-        if (this.userKey) {
-            ukey = `/${this.urlParams.userKey.join()}/${this.userKey}`;
+        let queryParamsJoined = "";
+        if (queryParams) {
+            queryParamsJoined = "?" + Object.entries(queryParams).map(([key, value]) => `${key}=${value}`).join('&');
         }
-        return `${baseUrl}${apiParamsJoined}${namedParamsJoined}/${this.urlParams.appKey.join()}/${this.appKey}${ukey}`;
+        return `${baseUrl}${namedParamsJoined}${queryParamsJoined}`;
     }
 
     createUrl(options) {
-        return this.createUrlArgs(options.urlParams, options.apiParams, options.namedParams);
+        this.logger.debug("createUrl: ", options)
+        return this.createUrlArgs(options.urlParams, options.namedParams, options.queryParams);
     }
 
-    connectUrl(redirect) {
-        const b64 = Buffer.from(redirect).toString('base64');
-        const encoded = encodeURIComponent(b64);
-        return this.createUrl({urlParams: this.urlParams.connect, namedParams: {redirect:encoded, secure: this.sign(redirect)}});
+    connectUrl(token, onSuccess) {
+        let url = this.createUrl({urlParams: ["connect"]});
+        this.logger.debug(`connectUrl: get of ${url}`)
+        axios.get(`${url}`, {headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }}).then((data) => {
+            this.logger.debug(`Connect url: ${data.data}`, data.data.data.connect_url);
+            onSuccess(data.data.data.connect_url);
+        }).catch((err) => this.logger.error(`Failed to get connect url: ${err}`, err))
     }
 
     entryUrl(id) {
         return `https://www.wykop.pl/wpis/${id}`;
     }
 
-    login(login, accountKey, onSuccess, onError) {
-        const url = this.createUrl({
-            urlParams: this.urlParams.login
-        });
-
-        const data = {login: login, accountkey: accountKey};
-        this.logger.info("login data: ", data);
-
-        //const dataStr = querystring.stringify(data);
-        const dataStr = qs.stringify(data);
-        const apisign = this.sign(url, data);
-        this.logger.trace(`apisign: ${apisign}`);
-
-        postAxios(url, dataStr, {
-            apisign: apisign,
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }, this.logger).then((res) => {
-            this.logger.info("Received response: ", res);
-            onSuccess(200, res);
+    userProfile(token, onSuccess, onError) {
+        axios.get(`${this.baseUrl}/profile/short`, {headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }}).then((response) => {
+            this.logger.debug(`User data: ${response.data}`, response.data.data);
+            this.logger.debug(`Username: ${response.data.data.username}`);
+            onSuccess(response.data.data.username);
         }).catch((err) => {
-            this.logger.error("Failure: ", err);
-            onError(err);
+            this.logger.error(`Failed to get user data: `, err);
+            if (onError) {
+                onError(err?.response?.data);
+            }
         });
-    }
-
-    sign(url, post) {
-        this.logger.debug(`sign: ${url}`, (post ? JSON.stringify(post).slice(0,150) : ""));
-        let postString = ''
-        if (post) {
-            if (Array.isArray(post)) {
-                postString = post.join();
-            }
-            else if (post instanceof Map) {
-                postString = [...post.values()].join();
-            }
-            else if (post instanceof String) {
-                postString = post;
-            }
-            else {
-                postString = Object.keys(post).map(key => post[key]).join();
-            }
-        }
-        const value = `${this.secret}${url}${postString}`;
-        this.logger.trace(`signing: ${value.slice(0,150)}`);
-        return md5(value);
     }
 
     getPageRequestUrl(tagName, pageId) {
-        return this.createUrl({urlParams: this.urlParams.tags, namedParams: {Entries: tagName, page: pageId, output: 'clear'}});
+        let queryParams = {
+            sort: 'all'
+        }
+        if (pageId) {
+            queryParams.page = pageId
+        }
+        return this.createUrl({urlParams: ['tags', tagName, 'stream'], queryParams: queryParams});
     }
 
-    retrievePage(tagName, id, onResult) {
+    retrievePage(tagName, id, token, onResult) {
         const url = this.getPageRequestUrl(tagName, id);
-        axios.get(url, {headers: {apisign: this.sign(url)}})
+        this.logger.debug(`Page request url: ${url}`);
+        axios.get(url, {headers: {Authorization: `Bearer ${token}`}})
             .then(res => onResult(res.data))
             .catch((err) => this.logger.error(err));
     }
 
-    async addEntryCommon(url, request, file, onResult, onError) {
+    async uploadPhoto(file, token, onSuccess, onError) {
+        const fileData = await fs.promises.readFile(file.filepath);
+
+        const formData = new FormData();
+        
+        formData.append('file', new Blob([fileData]), file.name);
+
+        const url = this.createUrl({urlParams: ["media", "photos", "upload"], queryParams: {type: 'comments'}});
+
+        const options = {
+            Authorization: `Bearer ${token}`,
+            'User-Agent': 'barylkakrwi',
+            'Content-Type': 'multipart/form-data'
+        };
+        
+        postAxios(url, formData, options, this.logger).then(onSuccess).catch(onError);
+    }
+
+    async addEntryCommon(url, request, file, token, onResult, onError) {
         this.logger.debug(`addEntryCommon request: `, request);
         this.logger.trace("addEntryCommon url: ", url);
 
-        const data = request;
-        const apisign = this.sign(url, data);
-        this.logger.trace(`apisign: ${apisign}`);
+        const data = {data: request};
 
-        const dataStr = qs.stringify(data);
-        const fd = new FormData();
-        if (file) {
-            let d;
-            for (d in data) {
-                fd.append(d, data[d]);
-            }
-            fd.append('embed', fs.createReadStream(file.path));
-        } else {
-            this.logger.trace("add entry data:", dataStr.slice(0,300));
-        }
-
-        const contentType = (file
-            ? fd.getHeaders()['content-type']
-            : 'application/x-www-form-urlencoded');
-
-        let options = {
-            apisign: apisign,
+        const options = {
+            Authorization: `Bearer ${token}`,
             'User-Agent': 'barylkakrwi',
-            'Content-Type': contentType
+            'Content-Type': 'application/json'
         };
 
         if (file) {
-            let resolver;
-            let promise = new Promise((resolve, reject) => { resolver = resolve});
-            fd.getLength((err, length) => {
-                options['Content-Length'] = length;
-                resolver();
-            });
-            await promise;
-        }
+            this.uploadPhoto(file, token, (photo) => {
+                this.logger.debug(`Uploaded photo key: ${photo?.data?.key}`);
+                const key = photo?.data?.key;
+                data.data.photo = key;
 
-        postAxios(url,
-            (file ? fd : dataStr),
-            options,
-            this.logger).then((res) => {
-              this.logger.info("Received response: ", res);
-              onResult(res);
-        }).catch((err) => {
-            this.logger.error("Failure: ", err);
-            onError(err);
-        });
+                postAxios(url,
+                    data,
+                    options,
+                    this.logger).then((res) => {
+                      this.logger.info("Received response: ", res);
+                      onResult(res);
+                }).catch((err) => {
+                    this.logger.error("Failure: ", err);
+                    onError(err);
+                });
+            }, (err) => onError(err));
+        } else {
+            postAxios(url,
+                data,
+                options,
+                this.logger).then((res) => {
+                  this.logger.info("Received response: ", res);
+                  onResult(res);
+            }).catch((err) => {
+                this.logger.error("Failure: ", err);
+                onError(err);
+            });
+        }
     }
 
-    async addEntry(request, file, onResult, onError) {
+    async addEntry(request, file, token, onResult, onError) {
         this.logger.debug(`addEntry request: `, request);
         const url = this.createUrl({
-            urlParams: this.urlParams.addEntry
+            urlParams: ["entries"]
         });
-        this.addEntryCommon(url, request, file, onResult, onError);
+        this.addEntryCommon(url, request, file, token, onResult, onError);
     }
 
-    async addEntryComment(entryId, request, file, onResult, onError) {
+    async addEntryComment(entryId, request, file, token, onResult, onError) {
         this.logger.debug(`addEntryComment request: `, request);
         const url = this.createUrl({
-            urlParams: this.urlParams.addEntryComment.concat(entryId)
+            urlParams: ["entries", entryId, "comments"]
         });
-        this.addEntryCommon(url, request, file, onResult, onError);
+        this.addEntryCommon(url, request, file, token, onResult, onError);
     }
 }
 

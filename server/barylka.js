@@ -29,21 +29,22 @@ module.exports = function(config, logger) {
     return Number.NaN;
   }
 
-  module.retrievePage = (id, onResult) => {
-    WykopAPI.retrievePage(config.data.tag, id, onResult);
+  module.retrievePage = (id, token, onResult) => {
+    WykopAPI.retrievePage(config.data.tag, id, token, onResult);
   }
 
-  module.retrieveCurrentVolume = (user, onResult) => {
+  module.retrieveCurrentVolume = (token, onResult) => {
+    let count = 0;
     let retriever = (id) => {
       let currentVolume = null;
-      module.retrievePage(id, (entries) => {
+      module.retrievePage(id, token, (entries) => {
         const data = entries.data;
         if (!data) {
           this.logger.error("Failed to retrieve page");
           return;
         }
         for (let e of data) {
-          const volume = module.testForCurrentVolume(e.body);
+          const volume = module.testForCurrentVolume(e.content);
           if (!isNaN(volume)) {
             currentVolume = volume;
             break;
@@ -53,15 +54,16 @@ module.exports = function(config, logger) {
           onResult(currentVolume);
           return;
         }
-        if (id < 10) {
-          retriever(id+1);
+        if (count < 10) {
+          count += 1;
+          retriever(entries?.pagination?.next);
         }
         else {
-          this.logger.error(`Failed to retrieve result, tried first ${id} pages`);
+          logger.error(`Failed to retrieve result, tried first ${count} pages`);
         }
       });
     };
-    retriever(1);
+    retriever(null);
   }
 
   function allOrOne(arr, sep) {
@@ -142,8 +144,8 @@ module.exports = function(config, logger) {
 
     output += `\n\n${module.getFooter()}`;
 
-    const login = req.cookies.userData ? req.cookies.userData.login: null;
-    module.retrieveCurrentVolume(login, (volume) => {
+    const token = req.locals?.token;
+    module.retrieveCurrentVolume(token, (volume) => {
       const volumes = donations.map(d => d.volume);
       const equation = module.composeEquation(volume, volumes);
       output = `${equation}\n${output}`;
