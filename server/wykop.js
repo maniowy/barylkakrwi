@@ -191,6 +191,12 @@ class Wykop {
                 const key = photo?.data?.key;
                 data.data.photo = key;
 
+                try {
+                    fs.unlinkSync(file.filepath);
+                } catch(err) {
+                    this.logger.error("Failed to remove the file: ", file.filepath);
+                }
+                
                 postAxios(url,
                     data,
                     options,
