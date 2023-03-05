@@ -57,7 +57,9 @@ module.exports = (config, logger) => {
 
     function refreshToken(rtoken, req, res, next) {
         WykopAPI.refreshToken(rtoken, (token, rtoken) => {
-            req.locals ??= {};
+            if (req.locals === undefined) {
+                req.locals = {};
+            }
             req.locals.token = token
 
             if (req.cookies.userData === undefined) {

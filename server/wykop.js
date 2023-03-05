@@ -1,4 +1,5 @@
 const axios = require('axios');
+const FormDataLegacy = require('form-data');
 const fs = require('fs');
 
 function postAxios(url, data, header, logger) {
@@ -158,11 +159,9 @@ class Wykop {
     }
 
     async uploadPhoto(file, token, onSuccess, onError) {
-        const fileData = await fs.promises.readFile(file.filepath);
-
-        const formData = new FormData();
+        const formData = new FormDataLegacy();
         
-        formData.append('file', new Blob([fileData]), file.name);
+        formData.append('file', fs.createReadStream(file.filepath));
 
         const url = this.createUrl({urlParams: ["media", "photos", "upload"], queryParams: {type: 'comments'}});
 
