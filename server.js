@@ -38,7 +38,10 @@ const pref = config.server.urlprefix ? `/${config.server.urlprefix}` : "";
 
 router.use((req, res, next) => {
   if (config.server.maintenance) {
-    res.render('maintenance');
+    res.render('maintenance', {
+      basedir: 'public',
+      appPrefix: config.server.appprefix
+    });
   } else {
     next();
   }
