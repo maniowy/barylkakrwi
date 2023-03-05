@@ -9,10 +9,9 @@ module.exports = (config, logger) => {
     WykopAPI.provideSecrets(config.confidential);
 
     module.verify = (req, res, next) => {
-        const noConnect = ["/latest"].includes(req.path);
+        const urlPrefix = config?.server?.urlprefix ? `/${config.server.urlprefix}` : "";
+        const noConnect = [`${urlPrefix}/latest`].includes(req.path);
 
-        const urlPrefix = config?.server?.urlprefix ?? "";
-        
         let rtoken = req.cookies?.userData?.rt;
         let token = req.locals?.token; 
         if (rtoken == undefined) {
