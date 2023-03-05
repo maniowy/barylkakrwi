@@ -7,13 +7,14 @@ module.exports = (config, logger) => {
 
     const WykopAPI = require('./wykop.js')(logger);
     WykopAPI.provideSecrets(config.confidential);
+    
+    const urlPrefix = config?.server?.urlprefix ? `/${config.server.urlprefix}` : "";
 
     module.verify = (req, res, next) => {
-        const urlPrefix = config?.server?.urlprefix ? `/${config.server.urlprefix}` : "";
         const noConnect = [`${urlPrefix}/latest`].includes(req.path);
 
         let rtoken = req.cookies?.userData?.rt;
-        let token = req.locals?.token; 
+        let token = req.locals?.token;
         if (rtoken == undefined) {
             rtoken = req.query.rtoken;
             token = req.query.token;
@@ -30,10 +31,6 @@ module.exports = (config, logger) => {
                 next();
             } else {
                 logger.debug("No refresh token provided");
-                logger.debug("Redirecting to: ", `${urlPrefix}/connect`)
-                //const url = new URL(`${urlPrefix}/connect`)
-                //url.searchParams = new URLSearchParams(req.query);
-                //next(gUrl.format({pathname:`${urlPrefix}/connect`, query:req.query}))
                 connect(req, res, next);
             }
         }
@@ -45,17 +42,17 @@ module.exports = (config, logger) => {
         }
     }
 
-    function connect(req, res, next) {
-        // const protocol = req.protocol;
-        // TODO failure path
+    function connect(_req, res, _next) {
         WykopAPI.getToken((token) => {
           logger.debug("Auth token: ", token);
           WykopAPI.connectUrl(token, (url) => {
             logger.debug("redirecting to: ", url);
             res.redirect(url);
           });
+        }, (_error) => {
+            logger.debug("failed to get access token");
+            res.render('authfailure');
         });
-        // FIXME error handling
     }
 
     function refreshToken(rtoken, req, res, next) {
@@ -82,6 +79,10 @@ module.exports = (config, logger) => {
             else {
                 next();
             }
+        }, (_error) => {
+            // the token has expired
+            res.clearCookie('userData');
+            res.redirect(`${urlPrefix}/`);
         });
     }
     

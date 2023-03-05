@@ -48,7 +48,7 @@ class Wykop {
         this.secret = confidential.secret;
     }
 
-    async getToken(onSuccess)
+    async getToken(onSuccess, onError)
     {
         const data = {data: {key: this.appKey, secret: this.secret}};
 
@@ -64,10 +64,11 @@ class Wykop {
         }
         catch (err) {
             this.logger.error("Failed to retrieve the token: ", err);
+            onError(err);
         }
     }
 
-    async refreshToken(rToken, onSuccess)
+    async refreshToken(rToken, onSuccess, onError)
     {
         const data = {data: {refresh_token: rToken}};
 
@@ -82,6 +83,7 @@ class Wykop {
         }
         catch (err) {
             this.logger.error("Failed to refresh the token: ", err);
+            onError(err);
         }
     }
 

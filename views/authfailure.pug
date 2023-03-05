@@ -1,0 +1,11 @@
+doctype html
+html(lang="pl-PL")
+  head
+    title Baryłka krwi
+    - const prefix = appPrefix ? `/${appPrefix}` : "";
+    link(type='text/css', rel='stylesheet', href=prefix+'/css/maintenance.css')
+  body
+    h1 Wystąpił błąd
+    p Nie możemy pobrać danych z wykop.pl. Spróbuj ponownie później.
+    p
+      a(href="https://wykop.pl/tag/barylkakrwi") #barylkakrwi

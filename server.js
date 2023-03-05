@@ -32,7 +32,6 @@ if (config.server.secure) {
 }
 
 const subdomainForward = require('./server/subdomainForward.js');
-const { request } = require('express');
 app.use(subdomainForward(config.server.subdomains, router));
 
 const pref = config.server.urlprefix ? `/${config.server.urlprefix}` : "";
