@@ -1,6 +1,6 @@
 {
   "name": "barylka",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Barylka krwi",
   "scripts": {
     "css-build": "sass --no-source-map client:public/css",
