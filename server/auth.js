@@ -67,7 +67,7 @@ module.exports = (config, logger) => {
                     logger.info("User logged in: ", username);
                     const cryptoToken = secure.encrypt(rtoken);
                     res.cookie('userData', {login: username, rt: cryptoToken},
-                    { maxAge: 24*60*60*1000, httpOnly: true, secure: true, sameSite: 'Strict'});
+                    { maxAge: 24*60*60*1000, httpOnly: true, secure: true, sameSite: 'Lax'});
                     next();
                 }, err => {
                     if (err?.code && err?.error && err?.error?.message) {
