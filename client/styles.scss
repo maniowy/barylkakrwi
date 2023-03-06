@@ -7,6 +7,7 @@
 
 // 2. Set your own initial variables
 $red: $color-red;
+$blue: $color-blue;
 $container-offset: (2 * $gap);
 $size-normal: 0.75rem;
 $size-6: 0.75rem;
@@ -220,7 +221,7 @@ input[type=number] {
 .selectorImageDismiss {
   position: absolute;
   left: calc(20vmin - 2em);
-  color: red;
+  color: $red;
 }
 
 #selectorPreviewContainer img {
@@ -232,5 +233,5 @@ input[type=number] {
 .mainImage {
   border: 4px;
   border-style: solid;
-  border-color: green;
+  border-color: $blue;
 }
